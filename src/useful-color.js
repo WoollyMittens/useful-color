@@ -20,6 +20,8 @@
 			var context = this;
 			// if the browser doesn't support ranges or is compelled to override the native ones
 			if (!context.cfg.support) {
+				// retrieve starting colour
+				context.cfg.color = context.obj.value || context.cfg.color;
 				// build the interface
 				context.setup(context);
 				// start the updates
@@ -54,6 +56,8 @@
 			context.obj.value = context.cfg.color;
 			// update the sub-components
 			context.popup.update(context);
+			// trigger the change event
+			context.cfg.onchange();
 		};
 		this.events = {};
 		this.events.change = function (element, context) {
