@@ -6,7 +6,7 @@
 	@import "compass/utilities";
 	@import "_definitions";
 	@import "_typography" ;
-	@import "../../useful-range/scss/useful-range.scss";
+	@import "../lib/useful-range.scss";
 	/*
 		Colour input field
 	*/
@@ -29,7 +29,7 @@
 			margin : -8px 0 0 0;
 			overflow : hidden;
 			position : absolute;
-			right : 5px;
+			right : 1em;
 			text-indent : 20px;
 			top : 50%;
 			width : 15px;
@@ -56,8 +56,8 @@
 			padding : 1em 1em 1em 1em;
 			label {
 				display : block;
-				height : 2em;
-				line-height : 2em;
+				height : 2.5em;
+				line-height : 2.5em;
 				margin : 0 0 1em 0;
 				padding : 0;
 				position : relative;
@@ -66,7 +66,7 @@
 					position : absolute;
 					right : 0;
 					text-align : right;
-					top : 0;
+					top : -0.8em;
 					width : 8em;
 				}
 			}
