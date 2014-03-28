@@ -27,6 +27,8 @@
 				// start the updates
 				context.update(context);
 			}
+			// disable the start function so it can't be started twice
+			this.start = function () {};
 		};
 		this.setup = function (context) {
 			// measure the dimensions of the parent element if they are not given
@@ -281,6 +283,8 @@
 				context.cfg.hover = false;
 			};
 		};
+		// go
+		this.start();
 	};
 
 

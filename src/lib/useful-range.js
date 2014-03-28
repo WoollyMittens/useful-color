@@ -25,6 +25,8 @@
 				// start the updates
 				context.update(context);
 			}
+			// disable the start function so it can't be started twice
+			this.start = function () {};
 		};
 		this.setup = function (context) {
 			// set the initial value, if there isn't one
@@ -157,6 +159,8 @@
 				return false;
 			};
 		};
+		// go
+		this.start();
 	};
 
 

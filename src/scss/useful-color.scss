@@ -40,7 +40,7 @@
 	*/
 	div.color_popup {
 		@include box-sizing(border-box);
-		@include background(linear-gradient(to bottom, #ffffff 0%,#ffffff 80%,#ffffff 80%,#cccccc 100%));
+		@include background(linear-gradient(top, #ffffff 0%,#ffffff 80%,#ffffff 80%,#cccccc 100%));
 		@include box-shadow(0 1px 3px #999);
 		@include border-radius(3px);
 		background-color : #ffffff;
