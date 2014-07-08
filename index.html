@@ -28,11 +28,15 @@
 			<aside>
 
 				<!-- Cut below this -->
-				<style>@import url("./inc/css/useful-color.css")</style>
+				<style>@import url("./inc/css/useful-color.css");</style>
 				<form>
 					<label>
-						Color:
-						<input name="examplecolor" pattern="^.+$" class="color" type="color" title="Pick a color" value=""  placeholder="#FF0000"/>
+						Native:
+						<input name="html5colour" pattern="^.+$" type="color" title="Pick a color" value="#FF0000"  placeholder="#FF0000"/>
+					</label>
+					<label>
+						Fallback:
+						<input name="fallbackcolour" pattern="^.+$" class="color" type="text" title="Pick a color" value=""  placeholder="#FF0000"/>
 					</label>
 				</form>
 				<script src="./inc/js/useful-color.js"></script>
@@ -45,8 +49,6 @@
 						{
 							// initial color
 							'color' : '#FF0000',
-							// browsers that are assumed to have native support for <input type='range'/>
-							'support' : navigator.userAgent.match(/webkit|opera|msie 10/gi),
 							// on change event
 							'onchange' : function () {}
 						}

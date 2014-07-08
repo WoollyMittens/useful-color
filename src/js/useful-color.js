@@ -18,15 +18,12 @@
 		// update cascade
 		this.start = function () {
 			var context = this;
-			// if the browser doesn't support ranges or is compelled to override the native ones
-			if (!context.cfg.support) {
-				// retrieve starting colour
-				context.cfg.color = context.obj.value || context.cfg.color;
-				// build the interface
-				context.setup(context);
-				// start the updates
-				context.update(context);
-			}
+			// retrieve starting colour
+			context.cfg.color = context.obj.value || context.cfg.color;
+			// build the interface
+			context.setup(context);
+			// start the updates
+			context.update(context);
 			// disable the start function so it can't be started twice
 			this.start = function () {};
 		};

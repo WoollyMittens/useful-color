@@ -1,90 +1,82 @@
+@import "compass/css3";
+@import "compass/utilities";
+@import "mixins";
+@import "../lib/useful-range.scss";
 /*
 	Reference styling for a colour picker
 */
-@media all {
-	@import "compass/css3";
-	@import "compass/utilities";
-	@import "_definitions";
-	@import "_typography" ;
-	@import "../lib/useful-range.scss";
-	/*
-		Colour input field
-	*/
-	span.color, input.color, input[type=color] {
-		@include box-sizing(border-box);
+span.color, input.color, input[type=color] {
+	@include box-sizing(border-box);
+	display : block;
+	width : 100%;
+	margin-bottom : 1em;
+}
+span.color {
+	position : relative;
+	span.color_button {
+		@include border-radius(2px);
+		background: #ff000;
+		border : solid 1px #000;
+		cursor : pointer;
 		display : block;
-		width : 100%;
-	}
-	span.color {
-		position : relative;
-		span.color_button {
-			@include border-radius(2px);
-			background: #ff000;
-			border : solid 1px #000;
-			cursor : pointer;
-			display : block;
-			font-size : 10px;
-			height : 15px;
-			line-height : 1;
-			margin : -8px 0 0 0;
-			overflow : hidden;
-			position : absolute;
-			right : 1em;
-			text-indent : 20px;
-			top : 50%;
-			width : 15px;
-		}
-	}
-	/*
-		color popup
-	*/
-	div.color_popup {
-		@include box-sizing(border-box);
-		@include background(linear-gradient(top, #ffffff 0%,#ffffff 80%,#ffffff 80%,#cccccc 100%));
-		@include box-shadow(0 1px 3px #999);
-		@include border-radius(3px);
-		background-color : #ffffff;
-		border : solid 1px #333;
+		font-size : 10px;
+		height : 15px;
+		line-height : 1;
+		margin : -8px 0 0 0;
+		overflow : hidden;
 		position : absolute;
-		width : 16em;
-		* {
-			@include box-sizing(border-box);
-		}
-		fieldset {
-			border : none;
-			margin : 0;
-			padding : 1em 1em 1em 1em;
-			label {
-				display : block;
-				height : 2.5em;
-				line-height : 2.5em;
-				margin : 0 0 1em 0;
-				padding : 0;
-				position : relative;
-				vertical-align : middle;
-				input {
-					position : absolute;
-					right : 0;
-					text-align : right;
-					top : -0.8em;
-					width : 8em;
-				}
-			}
-			span.range {
-				margin : 0 0 1em 0;
-			}
-		}
-	}
-	div.color_popup.color_hidden {
-		visibility : hidden;
-	}
-	div.color_popup.color_visible {
-		visibility : visible;
+		right : 1em;
+		text-indent : 20px;
+		top : 50%;
+		width : 15px;
 	}
 }
-@media (min-width: 1200px) {}
-@media (min-width: 980px) and (max-width: 1199px) {}
-@media (min-width: 768px) and (max-width: 979px) {}
-@media (max-width: 767px) {}
-@media (max-width: 480px) {}
-@media print {}
+/*
+	color popup
+*/
+div.color_popup {
+	@include box-sizing(border-box);
+	@include background(linear-gradient(top, #ffffff 0%,#ffffff 80%,#ffffff 80%,#cccccc 100%));
+	@include box-shadow(0 1px 3px #999);
+	@include border-radius(3px);
+	background-color : #ffffff;
+	border : solid 1px #333;
+	position : absolute;
+	width : 16em;
+	* {
+		@include box-sizing(border-box);
+	}
+	fieldset {
+		border : none;
+		margin : 0;
+		padding : 1em 1em 1em 1em;
+		label {
+			display : block;
+			height : 2.5em;
+			line-height : 2.5em;
+			margin : 0.5em 0 0.5em 0;
+			padding : 0;
+			position : relative;
+			vertical-align : middle;
+			input {
+				position : absolute;
+				right : 0;
+				text-align : right;
+				top : 0;
+				padding : 0.2em;
+				height : 2em;
+				width : 8em;
+			}
+		}
+		span.range {
+			margin : 0 0 1em 0;
+		}
+	}
+}
+div.color_popup.color_hidden {
+	visibility : hidden;
+}
+div.color_popup.color_visible {
+	visibility : visible;
+}
+

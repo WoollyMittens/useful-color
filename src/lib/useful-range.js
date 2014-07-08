@@ -18,13 +18,10 @@
 		// update cascade
 		this.start = function () {
 			var context = this;
-			// if the browser doesn't support ranges or is compelled to override the native ones and the element had not been treated before
-			if (!context.cfg.support && !context.obj.parentNode.className.match(/range/)) {
-				// build the interface
-				context.setup(context);
-				// start the updates
-				context.update(context);
-			}
+			// build the interface
+			context.setup(context);
+			// start the updates
+			context.update(context);
 			// disable the start function so it can't be started twice
 			this.start = function () {};
 		};
