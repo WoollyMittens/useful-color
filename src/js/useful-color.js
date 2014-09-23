@@ -6,7 +6,10 @@
 	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
 */
 
-(function (useful) {
+// public object
+var useful = useful || {};
+
+(function(){
 
 	// invoke strict mode
 	"use strict";
@@ -284,5 +287,9 @@
 		this.start();
 	};
 
+	// return as a require.js module
+	if (typeof module !== 'undefined') {
+		exports = module.exports = useful.Color;
+	}
 
-}(window.useful = window.useful || {}));
+})();
