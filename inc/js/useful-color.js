@@ -1,62 +1,6 @@
 /*
 	Source:
-	van Creij, Maurice (2012). "useful.instances.js: A library of useful functions to ease working with instances of constructors.", version 20121126, http://www.woollymittens.nl/.
-
-	License:
-	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
-*/
-
-// public object
-var useful = useful || {};
-
-(function(){
-
-	// Invoke strict mode
-	"use strict";
-
-	// public functions
-	useful.Instances = function (objs, constructor, cfg) {
-		// properties
-		this.objs = objs;
-		this.constructor = constructor;
-		this.cfg = cfg;
-		this.constructs = [];
-		// starts and stores an instance of the constructor for every element
-		this.start = function () {
-			for (var a = 0, b = this.objs.length; a < b; a += 1) {
-				// store a constructed instance with cloned cfg object
-				this.constructs[a] = new this.constructor(this.objs[a], Object.create(this.cfg));
-			}
-			// disable the start function so it can't be started twice
-			this.start = function () {};
-			// empty the timeout
-			return null;
-		};
-		// returns the constructs
-		this.getAll = function () {
-			return this.constructs;
-		};
-		// returns the object that goes with the element
-		this.getByObject = function (element) {
-			return this.constructs[this.constructs.indexOf(element)];
-		};
-		// returns the object that goes with the index
-		this.getByIndex = function (index) {
-			return this.constructs[index];
-		};
-		this.start();
-	};
-
-	// return as a require.js module
-	if (typeof module !== 'undefined') {
-		exports = module.exports = useful.Instances;
-	}
-
-})();
-
-/*
-	Source:
-	van Creij, Maurice (2012). "useful.polyfills.js: A library of useful polyfills to ease working with HTML5 in legacy environments.", version 20121126, http://www.woollymittens.nl/.
+	van Creij, Maurice (2014). "useful.polyfills.js: A library of useful polyfills to ease working with HTML5 in legacy environments.", version 20141127, http://www.woollymittens.nl/.
 
 	License:
 	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
@@ -336,7 +280,7 @@ var useful = useful || {};
 
 /*
 	Source:
-	van Creij, Maurice (2012). "useful.positions.js: A library of useful functions to ease working with screen positions.", version 20121126, http://www.woollymittens.nl/.
+	van Creij, Maurice (2014). "useful.positions.js: A library of useful functions to ease working with screen positions.", version 20141127, http://www.woollymittens.nl/.
 
 	License:
 	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
@@ -443,469 +387,1207 @@ var useful = useful || {};
 })();
 
 /*
+
 	Source:
-	van Creij, Maurice (2012). "useful.range.js: Range input element", version 20130510, http://www.woollymittens.nl/.
+
+	van Creij, Maurice (2014). "useful.range.js: Range input element", version 20141127, http://www.woollymittens.nl/.
+
+
 
 	License:
+
 	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
+
 */
 
-// public object
+
+
+// create the constructor if needed
+
 var useful = useful || {};
 
-(function(){
+useful.Range = useful.Range || function () {};
 
-	// invoke strict mode
+
+
+// extend the constructor
+
+useful.Range.prototype.Events = function (parent) {
+
+	// properties
+
 	"use strict";
 
-	// private functions
-	useful.Range = function (obj, cfg) {
-		this.obj = obj;
-		this.cfg = cfg;
-		// update cascade
-		this.start = function () {
-			var context = this;
-			// build the interface
-			context.setup(context);
-			// start the updates
-			context.update(context);
-			// disable the start function so it can't be started twice
-			this.start = function () {};
-		};
-		this.setup = function (context) {
-			// set the initial value, if there isn't one
-			context.obj.value = context.obj.value || 0;
-			// measure the dimensions of the parent element if they are not given
-			context.cfg.width = context.cfg.width || context.obj.offsetWidth;
-			context.cfg.height = context.cfg.height || context.obj.offsetHeight;
-			// create a container around the element
-			context.cfg.container = document.createElement('span');
-			context.cfg.container.className = 'range';
-			// add the container into the label
-			context.obj.parentNode.insertBefore(context.cfg.container, context.obj);
-			// move the input element into the container
-			context.cfg.container.appendChild(context.obj.parentNode.removeChild(context.obj));
-			// add the range rails
-			context.cfg.rails = document.createElement('span');
-			context.cfg.rails.className = 'range_rails';
-			context.cfg.container.appendChild(context.cfg.rails);
-			// add the range button
-			context.cfg.button = document.createElement('span');
-			context.cfg.button.className = 'range_button range_passive';
-			context.cfg.container.appendChild(context.cfg.button);
-			// set the event handler
-			context.events.mouse(context.cfg.container, context);
-			// check of changes
-			clearInterval(context.cfg.interval);
-			context.cfg.interval = setInterval(function () {
-				context.update(context);
-			}, 500);
-		};
-		this.update = function (context) {
-			var min, max, value, steps, range;
-			// get the attributes from the input element
-			min = parseFloat(context.obj.getAttribute('min')) || 0;
-			max = parseFloat(context.obj.getAttribute('max')) || 1;
-			steps = parseFloat(context.obj.getAttribute('steps')) || 0;
-			range = max - min;
-			// get the offset of the element
-			context.cfg.offset = useful.positions.object(context.cfg.container);
-			// get the existing value or the fresh input
-			value = (context.cfg.x === null) ?
-				parseFloat(context.obj.value) :
-				(context.cfg.x - context.cfg.offset.x) / context.cfg.container.offsetWidth * range + min;
-			// apply any steps to the value
-			if (steps) {
-				var rounding;
-				rounding = value % steps;
-				value = (rounding > steps / 2) ?
-					value + (steps - rounding) :
-					value - rounding;
-			}
-			// normalize the value
-			if (value < min) {
-				value = min;
-			}
-			if (value > max) {
-				value = max;
-			}
-			// set the button position
-			context.cfg.button.style.left = Math.round((value - min) / range * 100) + '%';
-			// update the title
-			if (context.cfg.title) {
-				context.cfg.container.setAttribute('title', context.cfg.title.replace('{value}', Math.round(value)).replace('{min}', min).replace('{max}', max));
-			}
-			// update the value
-			context.obj.value = value;
-			// trigger any onchange event
-			if (context.cfg.x !== null) {
-				var evt = document.createEvent('HTMLEvents');
-				evt.initEvent('change', false, true);
-				context.obj.dispatchEvent(evt);
-			}
-		};
-		this.events = {};
-		this.events.mouse = function (element, context) {
-			// initialise coordinates
-			context.cfg.x = null;
-			context.cfg.reset = null;
-			// mouse escapes the element
-			element.onmouseout = function () {
-				// cancel the previous reset timeout
-				clearTimeout(context.cfg.reset);
-				// set the reset timeout
-				context.cfg.reset = setTimeout(function () {
-					// cancel the interaction
-					context.cfg.x = null;
-					context.cfg.motion = false;
-					// deactivate the button
-					context.cfg.button.className = context.cfg.button.className.replace('_active', '_passive');
-				}, 100);
-			};
-			element.onmouseover = function () {
-				// cancel the previous reset timeout
-				clearTimeout(context.cfg.reset);
-			};
-			// mouse gesture controls
-			element.onmousedown = function (event) {
-				// get the event properties
-				event = event || window.event;
-				// store the touch positions
-				context.cfg.x = event.pageX || (event.x + context.cfg.offset.x);
-				// activate the button
-				context.cfg.button.className = context.cfg.button.className.replace('_passive', '_active');
-				// update the value
-				context.update(context);
-				// cancel the click
-				return false;
-			};
-			element.onmousemove = function (event) {
-				// get the event properties
-				event = event || window.event;
-				// if the gesture is active
-				if (context.cfg.x !== null) {
-					// store the touch positions
-					context.cfg.x = event.pageX || (event.x + context.cfg.offset.x);
-					// update the value
-					context.update(context);
-				}
-				// cancel the click
-				return false;
-			};
-			element.onmouseup = function (event) {
-				// get the event properties
-				event = event || window.event;
-				// reset the interaction
-				context.cfg.x = null;
+	this.parent = parent;
+
+	this.cfg = parent.cfg;
+
+	// methods
+
+	this.mouse = function () {
+
+		var _this = this, element = this.cfg.container;
+
+		// initialise coordinates
+
+		this.cfg.x = null;
+
+		this.cfg.reset = null;
+
+		// mouse escapes the element
+
+		element.onmouseout = function () {
+
+			// cancel the previous reset timeout
+
+			clearTimeout(_this.cfg.reset);
+
+			// set the reset timeout
+
+			_this.cfg.reset = setTimeout(function () {
+
+				// cancel the interaction
+
+				_this.cfg.x = null;
+
+				_this.cfg.motion = false;
+
 				// deactivate the button
-				context.cfg.button.className = context.cfg.button.className.replace('_active', '_passive');
-				// cancel the click
-				return false;
-			};
+
+				_this.cfg.button.className = _this.cfg.button.className.replace('_active', '_passive');
+
+			}, 100);
+
 		};
-		// go
-		this.start();
+
+		element.onmouseover = function () {
+
+			// cancel the previous reset timeout
+
+			clearTimeout(_this.cfg.reset);
+
+		};
+
+		// mouse gesture controls
+
+		element.onmousedown = function (event) {
+
+			// get the event properties
+
+			event = event || window.event;
+
+			// store the touch positions
+
+			_this.cfg.x = event.pageX || (event.x + _this.cfg.offset.x);
+
+			// activate the button
+
+			_this.cfg.button.className = _this.cfg.button.className.replace('_passive', '_active');
+
+			// update the value
+
+			_this.parent.update();
+
+			// cancel the click
+
+			return false;
+
+		};
+
+		element.onmousemove = function (event) {
+
+			// get the event properties
+
+			event = event || window.event;
+
+			// if the gesture is active
+
+			if (_this.cfg.x !== null) {
+
+				// store the touch positions
+
+				_this.cfg.x = event.pageX || (event.x + _this.cfg.offset.x);
+
+				// update the value
+
+				_this.parent.update();
+
+			}
+
+			// cancel the click
+
+			return false;
+
+		};
+
+		element.onmouseup = function (event) {
+
+			// get the event properties
+
+			event = event || window.event;
+
+			// reset the interaction
+
+			_this.cfg.x = null;
+
+			// deactivate the button
+
+			_this.cfg.button.className = _this.cfg.button.className.replace('_active', '_passive');
+
+			// cancel the click
+
+			return false;
+
+		};
+
 	};
 
-	// return as a require.js module
-	if (typeof module !== 'undefined') {
-		exports = module.exports = useful.Range;
-	}
+	// go
 
-})();
+	this.mouse();
+
+};
+
+
+
+// return as a require.js module
+
+if (typeof module !== 'undefined') {
+
+	exports = module.exports = useful.Range;
+
+}
+
 
 /*
+
 	Source:
-	van Creij, Maurice (2012). "useful.color.js: Color input element", version 20130510, http://www.woollymittens.nl/.
+
+	van Creij, Maurice (2014). "useful.range.js: Range input element", version 20141127, http://www.woollymittens.nl/.
+
+
 
 	License:
+
 	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
+
 */
 
-// public object
+
+
+// create the constructor if needed
+
 var useful = useful || {};
 
-(function(){
+useful.Range = useful.Range || function () {};
 
-	// invoke strict mode
+
+
+// extend the constructor
+
+useful.Range.prototype.Main = function (parent, cfg) {
+
+	// properties
+
 	"use strict";
 
-	// private functions
-	useful.Color = function (obj, cfg) {
-		this.obj = obj;
-		this.cfg = cfg;
-		// update cascade
-		this.start = function () {
-			var context = this;
-			// retrieve starting colour
-			context.cfg.color = context.obj.value || context.cfg.color;
-			// build the interface
-			context.setup(context);
-			// start the updates
-			context.update(context);
-			// disable the start function so it can't be started twice
-			this.start = function () {};
-		};
-		this.setup = function (context) {
-			// measure the dimensions of the parent element if they are not given
-			context.cfg.width = context.cfg.width || context.obj.offsetWidth;
-			context.cfg.height = context.cfg.height || context.obj.offsetHeight;
-			// create a container around the element
-			context.cfg.container = document.createElement('span');
-			context.cfg.container.className = 'color';
-			// add the container into the label
-			context.obj.parentNode.insertBefore(context.cfg.container, context.obj);
-			// move the input element into the container
-			context.cfg.container.appendChild(context.obj.parentNode.removeChild(context.obj));
-			// add the pick button
-			context.cfg.button = document.createElement('span');
-			context.cfg.button.className = 'color_button color_passive';
-			context.cfg.container.appendChild(context.cfg.button);
-			// set the event handlers
-			context.events.pick(context.cfg.button, context);
-			context.events.reset(document.body, context);
-			context.events.change(context.obj, context);
-		};
-		this.update = function (context) {
-			// update the color indicator
-			context.cfg.button.innerHTML = context.cfg.color;
-			context.cfg.button.title = context.cfg.color;
-			context.cfg.button.style.backgroundColor = context.cfg.color;
-			context.obj.value = context.cfg.color;
-			// update the sub-components
-			context.popup.update(context);
-			// trigger the change event
-			context.cfg.onchange();
-		};
-		this.events = {};
-		this.events.change = function (element, context) {
-			// set an event handler
-			element.addEventListener('change', function () {
-				var color;
-				// if this appears to be a valid hex string
-				color = parseInt(element.value.replace('#', ''), 16);
-				if (!isNaN(color) && element.value.match(/#/) && (element.value.length === 4 || element.value.length === 7)) {
-					// try to change it into a color
-					context.cfg.color = element.value;
-					// update the interface
-					context.update(context);
-				}
-			}, false);
-		};
-		this.events.pick = function (element, context) {
-			// set an event handler
-			element.addEventListener('click', function (event) {
-				// construct the popup
-				context.popup.setup(context);
-				// cancel the click
-				event.preventDefault();
-			}, false);
-		};
-		this.events.reset = function (element, context) {
-			element.addEventListener('click', function () {
-				// construct the popup
-				context.popup.remove(context);
-			}, false);
-		};
-		this.popup = {};
-		this.popup.setup = function (context) {
-			var color, colors, labelName, inputName, sliderName;
-			// remove any existing popup
-			if (context.cfg.popup) {
-				context.cfg.popup.parentNode.removeChild(context.cfg.popup);
-			}
-			// reset its hover state
-			context.cfg.hover = false;
-			// build the popup container
-			context.cfg.popup = document.createElement('div');
-			context.cfg.popup.className = 'color_popup color_hidden';
-			// build the colors UI
-			context.cfg.colorInput = document.createElement('fieldset');
-			// write the color controls
-			colors = {'red' : 'Red: ', 'green' : 'Green: ', 'blue' : 'Blue: '};
-			for (color in colors) {
-				if (colors.hasOwnProperty(color)) {
-					labelName = color + 'Label';
-					inputName = color + 'Input';
-					sliderName = color + 'Slider';
-					context.cfg[labelName] = document.createElement('label');
-					context.cfg[labelName].innerHTML = colors[color];
-					context.cfg[inputName] = document.createElement('input');
-					context.cfg[inputName].setAttribute('type', 'number');
-					context.cfg[inputName].setAttribute('name', inputName);
-					context.cfg[inputName].setAttribute('min', '0');
-					context.cfg[inputName].setAttribute('max', '255');
-					context.cfg[inputName].setAttribute('step', '1');
-					context.cfg[inputName].setAttribute('value', '127');
-					context.cfg[sliderName] = document.createElement('input');
-					context.cfg[sliderName].setAttribute('type', 'range');
-					context.cfg[sliderName].setAttribute('class', 'range');
-					context.cfg[sliderName].setAttribute('name', sliderName);
-					context.cfg[sliderName].setAttribute('min', '0');
-					context.cfg[sliderName].setAttribute('max', '255');
-					context.cfg[sliderName].setAttribute('step', '1');
-					context.cfg[sliderName].setAttribute('value', '127');
-					context.cfg[labelName].appendChild(context.cfg[inputName]);
-					context.cfg.colorInput.appendChild(context.cfg[labelName]);
-					context.cfg.colorInput.appendChild(context.cfg[sliderName]);
-				}
-			}
-			// add the color input to the popup
-			context.cfg.popup.appendChild(context.cfg.colorInput);
-			// insert the popup into the document
-			document.body.appendChild(context.cfg.popup);
-			// position the popup
-			context.cfg.position = useful.positions.object(context.cfg.button);
-			context.cfg.limits = useful.positions.window();
-			context.cfg.position.x -= (context.cfg.position.x + context.cfg.popup.offsetWidth > context.cfg.limits.x) ? context.cfg.popup.offsetWidth : 0;
-			context.cfg.position.y -= (context.cfg.position.y + context.cfg.popup.offsetHeight > context.cfg.limits.y) ? context.cfg.popup.offsetHeight : 0;
-			context.cfg.popup.style.left = (context.cfg.position.x + context.cfg.button.offsetWidth) + 'px';
-			context.cfg.popup.style.top = (context.cfg.position.y + context.cfg.button.offsetHeight) + 'px';
-			// update the popup once
-			context.popup.update(context);
-			// reveal the popup
-			context.popup.reveal(context);
-			// set the popup event handlers
-			context.popup.events.popUpOver(context.cfg.popup, context);
-			context.popup.events.popUpOut(context.cfg.popup, context);
-			// invoke the event handlers and fall-back for the sliders
-			var rangeInstance, rangeInstances = [];
-			for (color in colors) {
-				if (colors.hasOwnProperty(color)) {
-					inputName = color + 'Input';
-					sliderName = color + 'Slider';
-					context.popup.events.inputChange(context.cfg[inputName], color, context);
-					context.popup.events.sliderChange(context.cfg[sliderName], color, context);
-					rangeInstance = new useful.Range(context.cfg[sliderName], {
-						'title' : '{value} ({min}-{max})',
-						'support' : navigator.userAgent.match(/webkit|opera|msie 10/gi)
-					});
-					rangeInstance.start();
-					rangeInstances.push(rangeInstance);
-				}
-			}
-		};
-		this.popup.update = function (context) {
-			var red, green, blue;
-			// if there is a popup
-			if (context.cfg.popup) {
-				// if this is a 6 digit color
-				if (context.cfg.color.length === 7) {
-					// get the red component
-					red = parseInt(context.cfg.color.substr(1, 2), 16);
-					context.cfg.redInput.value = red;
-					context.cfg.redSlider.value = red;
-					// get the green component
-					green = parseInt(context.cfg.color.substr(3, 2), 16);
-					context.cfg.greenInput.value = green;
-					context.cfg.greenSlider.value = green;
-					// get the blue component
-					blue = parseInt(context.cfg.color.substr(5, 2), 16);
-					context.cfg.blueInput.value = blue;
-					context.cfg.blueSlider.value = blue;
-				// else
-				} else if (context.cfg.color.length === 4) {
-					// get the red component
-					red = context.cfg.color.substr(1, 1);
-					red = parseInt(red + red, 16);
-					context.cfg.redInput.value = red;
-					context.cfg.redSlider.value = red;
-					// get the green component
-					green = context.cfg.color.substr(2, 1);
-					green = parseInt(green + green, 16);
-					context.cfg.greenInput.value = green;
-					context.cfg.greenSlider.value = green;
-					// get the blue component
-					blue = context.cfg.color.substr(3, 1);
-					blue = parseInt(blue + blue, 16);
-					context.cfg.blueInput.value = blue;
-					context.cfg.blueSlider.value = blue;
-				}
-			}
-		};
-		this.popup.convert = function (context) {
-			var red, green, blue;
-			// update the color picker
-			red = parseInt(context.cfg.redInput.value, 10).toString(16);
-			red = (red.length === 1) ? '0' + red : red;
-			green = parseInt(context.cfg.greenInput.value, 10).toString(16);
-			green = (green.length === 1) ? '0' + green : green;
-			blue = parseInt(context.cfg.blueInput.value, 10).toString(16);
-			blue = (blue.length === 1) ? '0' + blue : blue;
-			context.cfg.color = '#' + red + green + blue;
-		};
-		this.popup.reveal = function (context) {
-			// reveal the popup
-			setTimeout(function () {
-				context.cfg.popup.className = context.cfg.popup.className.replace('color_hidden', 'color_visible');
-			}, 100);
-		};
-		this.popup.remove = function (context) {
-			// if the popup exists
-			if (context.cfg.popup && !context.cfg.hover) {
-				// hide the popup
-				context.cfg.popup.className = context.cfg.popup.className.replace('color_visible', 'color_hidden');
-			}
-		};
-		this.popup.events = {};
-		this.popup.events.inputChange = function (element, color, context) {
-			// set an event handler
-			element.onchange = function () {
-				var min, max, value;
-				// process the value
-				value = parseInt(element.value, 10);
-				min = parseFloat(element.getAttribute('min'));
-				max = parseFloat(element.getAttribute('max'));
-				if (isNaN(value)) {
-					value = 0;
-				}
-				if (value < min) {
-					value = min;
-				}
-				if (value > max) {
-					value = max;
-				}
-				// apply the value
-				context.cfg[color + 'Input'].value = value;
-				context.cfg[color + 'Slider'].value = value;
-				// update the stored color
-				context.popup.convert(context);
-				// update the interface
-				context.update(context);
-			};
-		};
-		this.popup.events.sliderChange = function (element, color, context) {
-			// set an event handler
-			element.onchange = function () {
-				// process the value
-				context.cfg[color + 'Input'].value = parseInt(element.value, 10);
-				// update the stored color
-				context.popup.convert(context);
-				// update the interface
-				context.update(context);
-			};
-		};
-		this.popup.events.popUpOver = function (element, context) {
-			// set an event handler
-			element.onmouseover = function () {
-				// set the hover state
-				context.cfg.hover = true;
-			};
-		};
-		this.popup.events.popUpOut = function (element, context) {
-			// set an event handler
-			element.onmouseout = function () {
-				// reset the hover state
-				context.cfg.hover = false;
-			};
-		};
-		// go
-		this.start();
+	this.parent = parent;
+
+	this.cfg = cfg;
+
+	this.obj = cfg.element;
+
+	// methods
+
+	this.start = function () {
+
+		// build the interface
+
+		this.setup();
+
+		// start the updates
+
+		this.update();
+
 	};
 
-	// return as a require.js module
-	if (typeof module !== 'undefined') {
-		exports = module.exports = useful.Color;
-	}
+	this.setup = function () {
 
-})();
+		// set the initial value, if there isn't one
+
+		this.obj.value = this.obj.value || 0;
+
+		// measure the dimensions of the parent element if they are not given
+
+		this.cfg.width = this.cfg.width || this.obj.offsetWidth;
+
+		this.cfg.height = this.cfg.height || this.obj.offsetHeight;
+
+		// create a container around the element
+
+		this.cfg.container = document.createElement('span');
+
+		this.cfg.container.className = 'range';
+
+		// add the container into the label
+
+		this.obj.parentNode.insertBefore(this.cfg.container, this.obj);
+
+		// move the input element into the container
+
+		this.cfg.container.appendChild(this.obj.parentNode.removeChild(this.obj));
+
+		// add the range rails
+
+		this.cfg.rails = document.createElement('span');
+
+		this.cfg.rails.className = 'range_rails';
+
+		this.cfg.container.appendChild(this.cfg.rails);
+
+		// add the range button
+
+		this.cfg.button = document.createElement('span');
+
+		this.cfg.button.className = 'range_button range_passive';
+
+		this.cfg.container.appendChild(this.cfg.button);
+
+		// set the event handler
+
+		this.events = new this.parent.Events(this);
+
+		// check of changes
+
+		clearInterval(this.cfg.interval);
+
+		var _this = this;
+
+		this.cfg.interval = setInterval(function () {
+
+			_this.update();
+
+		}, 500);
+
+	};
+
+	this.update = function () {
+
+		var min, max, value, steps, range;
+
+		// get the attributes from the input element
+
+		min = parseFloat(this.obj.getAttribute('min')) || 0;
+
+		max = parseFloat(this.obj.getAttribute('max')) || 1;
+
+		steps = parseFloat(this.obj.getAttribute('steps')) || 0;
+
+		range = max - min;
+
+		// get the offset of the element
+
+		this.cfg.offset = useful.positions.object(this.cfg.container);
+
+		// get the existing value or the fresh input
+
+		value = (this.cfg.x === null) ?
+
+			parseFloat(this.obj.value) :
+
+			(this.cfg.x - this.cfg.offset.x) / this.cfg.container.offsetWidth * range + min;
+
+		// apply any steps to the value
+
+		if (steps) {
+
+			var rounding;
+
+			rounding = value % steps;
+
+			value = (rounding > steps / 2) ?
+
+				value + (steps - rounding) :
+
+				value - rounding;
+
+		}
+
+		// normalize the value
+
+		if (value < min) {
+
+			value = min;
+
+		}
+
+		if (value > max) {
+
+			value = max;
+
+		}
+
+		// set the button position
+
+		this.cfg.button.style.left = Math.round((value - min) / range * 100) + '%';
+
+		// update the title
+
+		if (this.cfg.title) {
+
+			this.cfg.container.setAttribute('title', this.cfg.title.replace('{value}', Math.round(value)).replace('{min}', min).replace('{max}', max));
+
+		}
+
+		// update the value
+
+		this.obj.value = value;
+
+		// trigger any onchange event
+
+		if (this.cfg.x !== null) {
+
+			var evt = document.createEvent('HTMLEvents');
+
+			evt.initEvent('change', false, true);
+
+			this.obj.dispatchEvent(evt);
+
+		}
+
+	};
+
+	// go
+
+	this.start();
+
+	return this;
+
+};
+
+
+
+// return as a require.js module
+
+if (typeof module !== 'undefined') {
+
+	exports = module.exports = useful.Range;
+
+}
+
+
+/*
+
+	Source:
+
+	van Creij, Maurice (2014). "useful.range.js: Range input element", version 20141127, http://www.woollymittens.nl/.
+
+
+
+	License:
+
+	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
+
+*/
+
+
+
+// create the constructor if needed
+
+var useful = useful || {};
+
+useful.Range = useful.Range || function () {};
+
+
+
+// extend the constructor
+
+useful.Range.prototype.init = function (cfg) {
+
+	// properties
+
+	"use strict";
+
+	this.instances = [];
+
+	// methods
+
+	this.each = function (elements, cfg) {
+
+		var _cfg, instance;
+
+		// for all elements
+
+		for (var a = 0, b = elements.length; a < b; a += 1) {
+
+			// clone the configuration
+
+			_cfg = Object.create(cfg);
+
+			// insert the current element
+
+			_cfg.element = elements[a];
+
+			// start a new instance of the object
+
+			this.instances.push(new this.Main(this, _cfg));
+
+		}
+
+	};
+
+	// go
+
+	this.each(cfg.elements, cfg);
+
+	this.init = function () {};
+
+	return this;
+
+};
+
+
+
+// return as a require.js module
+
+if (typeof module !== 'undefined') {
+
+	exports = module.exports = useful.Range;
+
+}
+
+
+/*
+
+Source:
+
+van Creij, Maurice (2014). "useful.color.js: Color input element", version 20141127, http://www.woollymittens.nl/.
+
+
+
+License:
+
+This work is licensed under a Creative Commons Attribution 3.0 Unported License.
+
+*/
+
+
+
+// create the constructor if needed
+
+var useful = useful || {};
+
+useful.Color = useful.Color || function () {};
+
+
+
+// extend the constructor
+
+useful.Color.prototype.Main = function (parent, cfg) {
+
+	// properties
+
+	"use strict";
+
+	this.parent = parent;
+
+	this.cfg = cfg;
+
+	this.obj = cfg.element;
+
+	// methods
+
+	this.start = function () {
+
+		var context = this;
+
+		// retrieve starting colour
+
+		this.cfg.color = this.obj.value || this.cfg.color;
+
+		// build the interface
+
+		this.setup();
+
+		// start the updates
+
+		this.update();
+
+	};
+
+	this.setup = function () {
+
+		// measure the dimensions of the parent element if they are not given
+
+		this.cfg.width = this.cfg.width || this.obj.offsetWidth;
+
+		this.cfg.height = this.cfg.height || this.obj.offsetHeight;
+
+		// create a container around the element
+
+		this.cfg.container = document.createElement('span');
+
+		this.cfg.container.className = 'color';
+
+		// add the container into the label
+
+		this.obj.parentNode.insertBefore(this.cfg.container, this.obj);
+
+		// move the input element into the container
+
+		this.cfg.container.appendChild(this.obj.parentNode.removeChild(this.obj));
+
+		// add the pick button
+
+		this.cfg.button = document.createElement('span');
+
+		this.cfg.button.className = 'color_button color_passive';
+
+		this.cfg.container.appendChild(this.cfg.button);
+
+		// set the event handlers
+
+		this.handlePick(this.cfg.button);
+
+		this.handleReset(document.body);
+
+		this.handleChange(this.obj);
+
+	};
+
+	this.update = function () {
+
+		// update the color indicator
+
+		this.cfg.button.innerHTML = this.cfg.color;
+
+		this.cfg.button.title = this.cfg.color;
+
+		this.cfg.button.style.backgroundColor = this.cfg.color;
+
+		this.obj.value = this.cfg.color;
+
+		// update the sub-components
+
+		this.popup.update();
+
+		// trigger the change event
+
+		this.cfg.onchange();
+
+	};
+
+	this.handleChange = function (element) {
+
+		var _this = this;
+
+		// set an event handler
+
+		element.addEventListener('change', function () {
+
+			var color;
+
+			// if this appears to be a valid hex string
+
+			color = parseInt(element.value.replace('#', ''), 16);
+
+			if (!isNaN(color) && element.value.match(/#/) && (element.value.length === 4 || element.value.length === 7)) {
+
+				// try to change it into a color
+
+				_this.cfg.color = element.value;
+
+				// update the interface
+
+				_this.update();
+
+			}
+
+		}, false);
+
+	};
+
+	this.handlePick = function (element) {
+
+		var _this = this;
+
+		// set an event handler
+
+		element.addEventListener('click', function (event) {
+
+			// construct the popup
+
+			_this.popup.setup();
+
+			// cancel the click
+
+			event.preventDefault();
+
+		}, false);
+
+	};
+
+	this.handleReset = function (element) {
+
+		var _this = this;
+
+		element.addEventListener('click', function () {
+
+			// construct the popup
+
+			_this.popup.remove();
+
+		}, false);
+
+	};
+
+	// components
+
+	this.popup = new this.parent.Popup(this);
+
+	// go
+
+	this.start();
+
+	return this;
+
+};
+
+
+
+// return as a require.js module
+
+if (typeof module !== 'undefined') {
+
+	exports = module.exports = useful.Color.Main;
+
+}
+
+
+/*
+
+Source:
+
+van Creij, Maurice (2014). "useful.color.js: Color input element", version 20141127, http://www.woollymittens.nl/.
+
+
+
+License:
+
+This work is licensed under a Creative Commons Attribution 3.0 Unported License.
+
+*/
+
+
+
+// create the constructor if needed
+
+var useful = useful || {};
+
+useful.Color = useful.Color || function () {};
+
+
+
+// extend the constructor
+
+useful.Color.prototype.Popup = function (parent) {
+
+	// properties
+
+	"use strict";
+
+	this.parent = parent;
+
+	this.cfg = parent.cfg;
+
+	this.obj = parent.element;
+
+	// methods
+
+	this.setup = function () {
+
+		var color, colors, labelName, inputName, sliderName;
+
+		// remove any existing popup
+
+		if (this.cfg.modal) {
+
+			this.cfg.modal.parentNode.removeChild(this.cfg.modal);
+
+		}
+
+		// reset its hover state
+
+		this.cfg.hover = false;
+
+		// build the popup container
+
+		this.cfg.modal = document.createElement('div');
+
+		this.cfg.modal.className = 'color_popup color_hidden';
+
+		// build the colors UI
+
+		this.cfg.colorInput = document.createElement('fieldset');
+
+		// write the color controls
+
+		colors = {'red' : 'Red: ', 'green' : 'Green: ', 'blue' : 'Blue: '};
+
+		for (color in colors) {
+
+			if (colors.hasOwnProperty(color)) {
+
+				labelName = color + 'Label';
+
+				inputName = color + 'Input';
+
+				sliderName = color + 'Slider';
+
+				this.cfg[labelName] = document.createElement('label');
+
+				this.cfg[labelName].innerHTML = colors[color];
+
+				this.cfg[inputName] = document.createElement('input');
+
+				this.cfg[inputName].setAttribute('type', 'number');
+
+				this.cfg[inputName].setAttribute('name', inputName);
+
+				this.cfg[inputName].setAttribute('min', '0');
+
+				this.cfg[inputName].setAttribute('max', '255');
+
+				this.cfg[inputName].setAttribute('step', '1');
+
+				this.cfg[inputName].setAttribute('value', '127');
+
+				this.cfg[sliderName] = document.createElement('input');
+
+				this.cfg[sliderName].setAttribute('type', 'range');
+
+				this.cfg[sliderName].setAttribute('class', 'range');
+
+				this.cfg[sliderName].setAttribute('name', sliderName);
+
+				this.cfg[sliderName].setAttribute('min', '0');
+
+				this.cfg[sliderName].setAttribute('max', '255');
+
+				this.cfg[sliderName].setAttribute('step', '1');
+
+				this.cfg[sliderName].setAttribute('value', '127');
+
+				this.cfg[labelName].appendChild(this.cfg[inputName]);
+
+				this.cfg.colorInput.appendChild(this.cfg[labelName]);
+
+				this.cfg.colorInput.appendChild(this.cfg[sliderName]);
+
+			}
+
+		}
+
+		// add the color input to the popup
+
+		this.cfg.modal.appendChild(this.cfg.colorInput);
+
+		// insert the popup into the document
+
+		document.body.appendChild(this.cfg.modal);
+
+		// position the popup
+
+		this.cfg.position = useful.positions.object(this.cfg.button);
+
+		this.cfg.limits = useful.positions.window();
+
+		this.cfg.position.x -= (this.cfg.position.x + this.cfg.modal.offsetWidth > this.cfg.limits.x) ? this.cfg.modal.offsetWidth : 0;
+
+		this.cfg.position.y -= (this.cfg.position.y + this.cfg.modal.offsetHeight > this.cfg.limits.y) ? this.cfg.modal.offsetHeight : 0;
+
+		this.cfg.modal.style.left = (this.cfg.position.x + this.cfg.button.offsetWidth) + 'px';
+
+		this.cfg.modal.style.top = (this.cfg.position.y + this.cfg.button.offsetHeight) + 'px';
+
+		// update the popup once
+
+		this.update();
+
+		// reveal the popup
+
+		this.reveal();
+
+		// set the popup event handlers
+
+		this.handlePopUpOver(this.cfg.modal);
+
+		this.handlePopUpOut(this.cfg.modal);
+
+		// invoke the event handlers and fall-back for the sliders
+
+		var rangeInstance, rangeInstances = [];
+
+		for (color in colors) {
+
+			if (colors.hasOwnProperty(color)) {
+
+				inputName = color + 'Input';
+
+				sliderName = color + 'Slider';
+
+				this.handleInputChange(this.cfg[inputName], color);
+
+				this.handleSliderChange(this.cfg[sliderName], color);
+
+				rangeInstance = new useful.Range().init({
+
+					'elements' : [this.cfg[sliderName]],
+
+					'title' : '{value} ({min}-{max})',
+
+					'support' : navigator.userAgent.match(/webkit|opera|msie 10/gi)
+
+				});
+
+				rangeInstances.push(rangeInstance);
+
+			}
+
+		}
+
+	};
+
+	this.update = function () {
+
+		var red, green, blue;
+
+		// if there is a popup
+
+		if (this.cfg.modal) {
+
+			// if this is a 6 digit color
+
+			if (this.cfg.color.length === 7) {
+
+				// get the red component
+
+				red = parseInt(this.cfg.color.substr(1, 2), 16);
+
+				this.cfg.redInput.value = red;
+
+				this.cfg.redSlider.value = red;
+
+				// get the green component
+
+				green = parseInt(this.cfg.color.substr(3, 2), 16);
+
+				this.cfg.greenInput.value = green;
+
+				this.cfg.greenSlider.value = green;
+
+				// get the blue component
+
+				blue = parseInt(this.cfg.color.substr(5, 2), 16);
+
+				this.cfg.blueInput.value = blue;
+
+				this.cfg.blueSlider.value = blue;
+
+				// else
+
+			} else if (this.cfg.color.length === 4) {
+
+				// get the red component
+
+				red = this.cfg.color.substr(1, 1);
+
+				red = parseInt(red + red, 16);
+
+				this.cfg.redInput.value = red;
+
+				this.cfg.redSlider.value = red;
+
+				// get the green component
+
+				green = this.cfg.color.substr(2, 1);
+
+				green = parseInt(green + green, 16);
+
+				this.cfg.greenInput.value = green;
+
+				this.cfg.greenSlider.value = green;
+
+				// get the blue component
+
+				blue = this.cfg.color.substr(3, 1);
+
+				blue = parseInt(blue + blue, 16);
+
+				this.cfg.blueInput.value = blue;
+
+				this.cfg.blueSlider.value = blue;
+
+			}
+
+		}
+
+	};
+
+	this.convert = function () {
+
+		var red, green, blue;
+
+		// update the color picker
+
+		red = parseInt(this.cfg.redInput.value, 10).toString(16);
+
+		red = (red.length === 1) ? '0' + red : red;
+
+		green = parseInt(this.cfg.greenInput.value, 10).toString(16);
+
+		green = (green.length === 1) ? '0' + green : green;
+
+		blue = parseInt(this.cfg.blueInput.value, 10).toString(16);
+
+		blue = (blue.length === 1) ? '0' + blue : blue;
+
+		this.cfg.color = '#' + red + green + blue;
+
+	};
+
+	this.reveal = function () {
+
+		var _this = this;
+
+		// reveal the popup
+
+		setTimeout(function () {
+
+			_this.cfg.modal.className = _this.cfg.modal.className.replace('color_hidden', 'color_visible');
+
+		}, 100);
+
+	};
+
+	this.remove = function () {
+
+		var _this = this;
+
+		// if the popup exists
+
+		if (this.cfg.modal && !this.cfg.hover) {
+
+			// hide the popup
+
+			this.cfg.modal.className = this.cfg.modal.className.replace('color_visible', 'color_hidden');
+
+		}
+
+	};
+
+	// events
+
+	this.handleInputChange = function (element, color) {
+
+		var _this = this;
+
+		// set an event handler
+
+		element.onchange = function () {
+
+			var min, max, value;
+
+			// process the value
+
+			value = parseInt(element.value, 10);
+
+			min = parseFloat(element.getAttribute('min'));
+
+			max = parseFloat(element.getAttribute('max'));
+
+			if (isNaN(value)) {
+
+				value = 0;
+
+			}
+
+			if (value < min) {
+
+				value = min;
+
+			}
+
+			if (value > max) {
+
+				value = max;
+
+			}
+
+			// apply the value
+
+			_this.cfg[color + 'Input'].value = value;
+
+			_this.cfg[color + 'Slider'].value = value;
+
+			// update the stored color
+
+			_this.convert();
+
+			// update the interface
+
+			_this.parent.update();
+
+		};
+
+	};
+
+	this.handleSliderChange = function (element, color) {
+
+		var _this = this;
+
+		// set an event handler
+
+		element.onchange = function () {
+
+			// process the value
+
+			_this.cfg[color + 'Input'].value = parseInt(element.value, 10);
+
+			// update the stored color
+
+			_this.convert();
+
+			// update the interface
+
+			_this.parent.update();
+
+		};
+
+	};
+
+	this.handlePopUpOver = function (element) {
+
+		var _this = this;
+
+		// set an event handler
+
+		element.onmouseover = function () {
+
+			// set the hover state
+
+			_this.cfg.hover = true;
+
+		};
+
+	};
+
+	this.handlePopUpOut = function (element) {
+
+		var _this = this;
+
+		// set an event handler
+
+		element.onmouseout = function () {
+
+			// reset the hover state
+
+			_this.cfg.hover = false;
+
+		};
+
+	};
+
+};
+
+
+
+// return as a require.js module
+
+if (typeof module !== 'undefined') {
+
+	exports = module.exports = useful.Color.Popup;
+
+}
+
+
+/*
+
+Source:
+
+van Creij, Maurice (2014). "useful.color.js: Color input element", version 20141127, http://www.woollymittens.nl/.
+
+
+
+License:
+
+This work is licensed under a Creative Commons Attribution 3.0 Unported License.
+
+*/
+
+
+
+// create the constructor if needed
+
+var useful = useful || {};
+
+useful.Color = useful.Color || function () {};
+
+
+
+// extend the constructor
+
+useful.Color.prototype.init = function (cfg) {
+
+	// properties
+
+	"use strict";
+
+	this.instances = [];
+
+	// methods
+
+	this.each = function (elements, cfg) {
+
+		var _cfg, instance;
+
+		// for all elements
+
+		for (var a = 0, b = elements.length; a < b; a += 1) {
+
+			// clone the configuration
+
+			_cfg = Object.create(cfg);
+
+			// insert the current element
+
+			_cfg.element = elements[a];
+
+			// start a new instance of the object
+
+			this.instances.push(new this.Main(this, _cfg));
+
+		}
+
+	};
+
+	// go
+
+	this.each(cfg.elements, cfg);
+
+	this.init = function () {};
+
+	return this;
+
+};
+
+
+
+// return as a require.js module
+
+if (typeof module !== 'undefined') {
+
+	exports = module.exports = useful.Color;
+
+}
+

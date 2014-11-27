@@ -43,16 +43,14 @@
 				<script>
 				//<!--
 					// create new instances of the script
-					var colors = new useful.Instances(
-						document.querySelectorAll('input.color'),
-						useful.Color,
-						{
-							// initial color
-							'color' : '#FF0000',
-							// on change event
-							'onchange' : function () {}
-						}
-					);
+					var colors = new useful.Color().init({
+						// elements
+						'elements' : document.querySelectorAll('input.color'),
+						// initial color
+						'color' : '#FF0000',
+						// on change event
+						'onchange' : function () {}
+					});
 				//-->
 				</script>
 				<!-- Cut above this -->

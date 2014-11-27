@@ -28,50 +28,24 @@ To enable the use of HTML5 tags in Internet Explorer 8 and lower, include *html5
 
 ## How to start the script
 
-This is the safest way of starting the script, but allows for only one target element at a time.
+This method allows CSS Rules to be used to apply the script to one or more nodes at the same time.
 
 ```javascript
-var color = new useful.Color( document.getElementById('id'), {
+var colors = new useful.Color().init({
+	// elements
+	'elements' : document.querySelectorAll('input[type=color]'),
+	// initial color
 	'color' : '#FF0000',
-	'support' : navigator.userAgent.match(/webkit|opera|msie 10/gi)
+	// on change event
+	'onchange' : function () {}
 });
 ```
+
+**elements : {DOM elements}** - A collection of target elements.
 
 **color : {string}** - A colour in hex format for the placeholder text.
 
 **support : {boolean}** - A test to determine which browsers have native support for the color input element.
-
-### Using document.querySelectorAll
-
-This method allows CSS Rules to be used to apply the script to one or more nodes at the same time.
-
-```javascript
-var colors = new useful.Instances(
-	document.querySelectorAll('input.color'),
-	useful.Color,
-	{
-		'color' : '#FF0000',
-		'support' : navigator.userAgent.match(/webkit|opera|msie 10/gi)
-	}
-);
-```
-
-The "Instances" function clones the settings for each element in the CSS rule.
-
-### Using jQuery
-
-This method is similar to the previous one, but uses jQuery for processing the CSS rule and cloning the settings.
-
-```javascript
-var colors = [];
-$('input.color').each(function (index, element) {
-	colors[index] = new useful.Color( element, {
-		'color' : '#FF0000',
-		'support' : navigator.userAgent.match(/webkit|opera|msie 10/gi)
-	});
-	colors[index].start();
-});
-```
 
 ## How to build the script
 

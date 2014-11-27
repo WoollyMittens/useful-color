@@ -4,9 +4,10 @@ module.exports = function(grunt) {
 	var name = 'color';
 	var libs = [
 		'../useful-range/src/js/useful-range.js',
+		'../useful-range/src/js/useful-range-main.js',
+		'../useful-range/src/js/useful-range-events.js',
 		'../useful-range/src/scss/useful-range.scss',
 		'../useful-positions/src/js/useful-positions.js',
-		'../useful-instances/src/js/useful-instances.js',
 		'../useful-polyfills/src/js/useful-polyfills.js'
 	];
 	var mixins = [
