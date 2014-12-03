@@ -11,7 +11,7 @@ var useful = useful || {};
 useful.Color = useful.Color || function () {};
 
 // extend the constructor
-useful.Color.prototype.Main = function (parent, cfg) {
+useful.Color.prototype.Main = function (cfg, parent) {
 	// properties
 	"use strict";
 	this.parent = parent;

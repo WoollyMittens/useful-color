@@ -11,7 +11,7 @@ var useful = useful || {};
 useful.Range = useful.Range || function () {};
 
 // extend the constructor
-useful.Range.prototype.Main = function (parent, cfg) {
+useful.Range.prototype.Main = function (cfg, parent) {
 	// properties
 	"use strict";
 	this.parent = parent;
