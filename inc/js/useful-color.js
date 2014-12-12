@@ -279,11 +279,11 @@ var useful = useful || {};
 })();
 
 /*
-	Source:
-	van Creij, Maurice (2014). "useful.positions.js: A library of useful functions to ease working with screen positions.", version 20141127, http://www.woollymittens.nl/.
+Source:
+van Creij, Maurice (2014). "useful.positions.js: A library of useful functions to ease working with screen positions.", version 20141127, http://www.woollymittens.nl/.
 
-	License:
-	This work is licensed under a Creative Commons Attribution 3.0 Unported License.
+License:
+This work is licensed under a Creative Commons Attribution 3.0 Unported License.
 */
 
 // public object
@@ -325,15 +325,15 @@ var useful = useful || {};
 				position.y = parent.scrollTop;
 			} else {
 				position.x = (window.pageXOffset) ?
-					window.pageXOffset :
-					(document.documentElement) ?
-						document.documentElement.scrollLeft :
-						document.body.scrollLeft;
+				window.pageXOffset :
+				(document.documentElement) ?
+				document.documentElement.scrollLeft :
+				document.body.scrollLeft;
 				position.y = (window.pageYOffset) ?
-					window.pageYOffset :
-					(document.documentElement) ?
-						document.documentElement.scrollTop :
-						document.body.scrollTop;
+				window.pageYOffset :
+				(document.documentElement) ?
+				document.documentElement.scrollTop :
+				document.body.scrollTop;
 			}
 			// return the object
 			return position;
@@ -363,8 +363,16 @@ var useful = useful || {};
 			// define a position object
 			var position = {x : 0, y : 0};
 			// find the current position on the document
-			position.x = event.pageX || event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-			position.y = event.pageY || event.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+			if (event.touches && event.touches[0]) {
+				position.x = event.touches[0].pageX;
+				position.y = event.touches[0].pageY;
+			} else if (event.pageX !== undefined) {
+				position.x = event.pageX;
+				position.y = event.pageY;
+			} else {
+				position.x = event.clientX + (document.documentElement.scrollLeft || document.body.scrollLeft);
+				position.y = event.clientY + (document.documentElement.scrollTop || document.body.scrollTop);
+			}
 			// if a parent was given
 			if (parent) {
 				// retrieve the position of the parent
@@ -403,38 +411,38 @@ useful.Range.prototype.Events = function (parent) {
 	// properties
 	"use strict";
 	this.parent = parent;
-	this.cfg = parent.cfg;
+	this.config = parent.config;
 	// methods
 	this.mouse = function () {
-		var _this = this, element = this.cfg.container;
+		var _this = this, element = this.config.container;
 		// initialise coordinates
-		this.cfg.x = null;
-		this.cfg.reset = null;
+		this.config.x = null;
+		this.config.reset = null;
 		// mouse escapes the element
 		element.onmouseout = function () {
 			// cancel the previous reset timeout
-			clearTimeout(_this.cfg.reset);
+			clearTimeout(_this.config.reset);
 			// set the reset timeout
-			_this.cfg.reset = setTimeout(function () {
+			_this.config.reset = setTimeout(function () {
 				// cancel the interaction
-				_this.cfg.x = null;
-				_this.cfg.motion = false;
+				_this.config.x = null;
+				_this.config.motion = false;
 				// deactivate the button
-				_this.cfg.button.className = _this.cfg.button.className.replace('_active', '_passive');
+				_this.config.button.className = _this.config.button.className.replace('_active', '_passive');
 			}, 100);
 		};
 		element.onmouseover = function () {
 			// cancel the previous reset timeout
-			clearTimeout(_this.cfg.reset);
+			clearTimeout(_this.config.reset);
 		};
 		// mouse gesture controls
 		element.onmousedown = function (event) {
 			// get the event properties
 			event = event || window.event;
 			// store the touch positions
-			_this.cfg.x = event.pageX || (event.x + _this.cfg.offset.x);
+			_this.config.x = event.pageX || (event.x + _this.config.offset.x);
 			// activate the button
-			_this.cfg.button.className = _this.cfg.button.className.replace('_passive', '_active');
+			_this.config.button.className = _this.config.button.className.replace('_passive', '_active');
 			// update the value
 			_this.parent.update();
 			// cancel the click
@@ -444,9 +452,9 @@ useful.Range.prototype.Events = function (parent) {
 			// get the event properties
 			event = event || window.event;
 			// if the gesture is active
-			if (_this.cfg.x !== null) {
+			if (_this.config.x !== null) {
 				// store the touch positions
-				_this.cfg.x = event.pageX || (event.x + _this.cfg.offset.x);
+				_this.config.x = event.pageX || (event.x + _this.config.offset.x);
 				// update the value
 				_this.parent.update();
 			}
@@ -457,9 +465,9 @@ useful.Range.prototype.Events = function (parent) {
 			// get the event properties
 			event = event || window.event;
 			// reset the interaction
-			_this.cfg.x = null;
+			_this.config.x = null;
 			// deactivate the button
-			_this.cfg.button.className = _this.cfg.button.className.replace('_active', '_passive');
+			_this.config.button.className = _this.config.button.className.replace('_active', '_passive');
 			// cancel the click
 			return false;
 		};
@@ -470,7 +478,7 @@ useful.Range.prototype.Events = function (parent) {
 
 // return as a require.js module
 if (typeof module !== 'undefined') {
-	exports = module.exports = useful.Range;
+	exports = module.exports = useful.Range.Events;
 }
 
 /*
@@ -486,62 +494,65 @@ var useful = useful || {};
 useful.Range = useful.Range || function () {};
 
 // extend the constructor
-useful.Range.prototype.Main = function (cfg, parent) {
+useful.Range.prototype.Main = function (config, context) {
 	// properties
 	"use strict";
 	this.parent = parent;
-	this.cfg = cfg;
-	this.obj = cfg.element;
+	this.config = config;
+	this.context = context;
+	this.element = config.element;
 	// methods
-	this.start = function () {
+	this.init = function () {
 		// build the interface
 		this.setup();
 		// start the updates
 		this.update();
+		// return the object
+		return this;
 	};
 	this.setup = function () {
 		// set the initial value, if there isn't one
-		this.obj.value = this.obj.value || 0;
+		this.element.value = this.element.value || 0;
 		// measure the dimensions of the parent element if they are not given
-		this.cfg.width = this.cfg.width || this.obj.offsetWidth;
-		this.cfg.height = this.cfg.height || this.obj.offsetHeight;
+		this.config.width = this.config.width || this.element.offsetWidth;
+		this.config.height = this.config.height || this.element.offsetHeight;
 		// create a container around the element
-		this.cfg.container = document.createElement('span');
-		this.cfg.container.className = 'range';
+		this.config.container = document.createElement('span');
+		this.config.container.className = 'range';
 		// add the container into the label
-		this.obj.parentNode.insertBefore(this.cfg.container, this.obj);
+		this.element.parentNode.insertBefore(this.config.container, this.element);
 		// move the input element into the container
-		this.cfg.container.appendChild(this.obj.parentNode.removeChild(this.obj));
+		this.config.container.appendChild(this.element.parentNode.removeChild(this.element));
 		// add the range rails
-		this.cfg.rails = document.createElement('span');
-		this.cfg.rails.className = 'range_rails';
-		this.cfg.container.appendChild(this.cfg.rails);
+		this.config.rails = document.createElement('span');
+		this.config.rails.className = 'range_rails';
+		this.config.container.appendChild(this.config.rails);
 		// add the range button
-		this.cfg.button = document.createElement('span');
-		this.cfg.button.className = 'range_button range_passive';
-		this.cfg.container.appendChild(this.cfg.button);
+		this.config.button = document.createElement('span');
+		this.config.button.className = 'range_button range_passive';
+		this.config.container.appendChild(this.config.button);
 		// set the event handler
-		this.events = new this.parent.Events(this);
+		this.events = new this.context.Events(this);
 		// check of changes
-		clearInterval(this.cfg.interval);
+		clearInterval(this.config.interval);
 		var _this = this;
-		this.cfg.interval = setInterval(function () {
+		this.config.interval = setInterval(function () {
 			_this.update();
 		}, 500);
 	};
 	this.update = function () {
 		var min, max, value, steps, range;
 		// get the attributes from the input element
-		min = parseFloat(this.obj.getAttribute('min')) || 0;
-		max = parseFloat(this.obj.getAttribute('max')) || 1;
-		steps = parseFloat(this.obj.getAttribute('steps')) || 0;
+		min = parseFloat(this.element.getAttribute('min')) || 0;
+		max = parseFloat(this.element.getAttribute('max')) || 1;
+		steps = parseFloat(this.element.getAttribute('steps')) || 0;
 		range = max - min;
 		// get the offset of the element
-		this.cfg.offset = useful.positions.object(this.cfg.container);
+		this.config.offset = useful.positions.object(this.config.container);
 		// get the existing value or the fresh input
-		value = (this.cfg.x === null) ?
-			parseFloat(this.obj.value) :
-			(this.cfg.x - this.cfg.offset.x) / this.cfg.container.offsetWidth * range + min;
+		value = (this.config.x === null) ?
+			parseFloat(this.element.value) :
+			(this.config.x - this.config.offset.x) / this.config.container.offsetWidth * range + min;
 		// apply any steps to the value
 		if (steps) {
 			var rounding;
@@ -558,28 +569,25 @@ useful.Range.prototype.Main = function (cfg, parent) {
 			value = max;
 		}
 		// set the button position
-		this.cfg.button.style.left = Math.round((value - min) / range * 100) + '%';
+		this.config.button.style.left = Math.round((value - min) / range * 100) + '%';
 		// update the title
-		if (this.cfg.title) {
-			this.cfg.container.setAttribute('title', this.cfg.title.replace('{value}', Math.round(value)).replace('{min}', min).replace('{max}', max));
+		if (this.config.title) {
+			this.config.container.setAttribute('title', this.config.title.replace('{value}', Math.round(value)).replace('{min}', min).replace('{max}', max));
 		}
 		// update the value
-		this.obj.value = value;
+		this.element.value = value;
 		// trigger any onchange event
-		if (this.cfg.x !== null) {
+		if (this.config.x !== null) {
 			var evt = document.createEvent('HTMLEvents');
 			evt.initEvent('change', false, true);
-			this.obj.dispatchEvent(evt);
+			this.element.dispatchEvent(evt);
 		}
 	};
-	// go
-	this.start();
-	return this;
 };
 
 // return as a require.js module
 if (typeof module !== 'undefined') {
-	exports = module.exports = useful.Range;
+	exports = module.exports = useful.Range.Main;
 }
 
 /*
@@ -595,32 +603,32 @@ var useful = useful || {};
 useful.Range = useful.Range || function () {};
 
 // extend the constructor
-useful.Range.prototype.init = function (cfg) {
+useful.Range.prototype.init = function (config) {
 	// properties
 	"use strict";
 	// methods
-	this.only = function (cfg) {
+	this.only = function (config) {
 		// start an instance of the script
-		return new this.Main(cfg, this);
+		return new this.Main(config, this).init();
 	};
-	this.each = function (cfg) {
-		var _cfg, instances = [];
+	this.each = function (config) {
+		var _config, _context = this, instances = [];
 		// for all element
-		for (var a = 0, b = cfg.elements.length; a < b; a += 1) {
-			// clone the cfguration
-			_cfg = Object.create(cfg);
+		for (var a = 0, b = config.elements.length; a < b; a += 1) {
+			// clone the configuration
+			_config = Object.create(config);
 			// insert the current element
-			_cfg.element = cfg.elements[a];
+			_config.element = config.elements[a];
 			// delete the list of elements from the clone
-			delete _cfg.elements;
+			delete _config.elements;
 			// start a new instance of the object
-			instances[a] = new this.Main(_cfg, this);
+			instances[a] = new this.Main(_config, _context).init();
 		}
 		// return the instances
 		return instances;
 	};
 	// return a single or multiple instances of the script
-	return (cfg.elements) ? this.each(cfg) : this.only(cfg);
+	return (config.elements) ? this.each(config) : this.only(config);
 };
 
 // return as a require.js module
@@ -641,52 +649,53 @@ var useful = useful || {};
 useful.Color = useful.Color || function () {};
 
 // extend the constructor
-useful.Color.prototype.Main = function (cfg, parent) {
+useful.Color.prototype.Main = function (config, context) {
 	// properties
 	"use strict";
-	this.parent = parent;
-	this.cfg = cfg;
-	this.obj = cfg.element;
+	this.config = config;
+	this.context = context;
+	this.element = config.element;
 	// methods
-	this.start = function () {
-		var context = this;
+	this.init = function () {
 		// retrieve starting colour
-		this.cfg.color = this.obj.value || this.cfg.color;
+		this.config.color = this.element.value || this.config.color;
 		// build the interface
 		this.setup();
 		// start the updates
 		this.update();
+		// return the object
+		return this;
 	};
 	this.setup = function () {
 		// measure the dimensions of the parent element if they are not given
-		this.cfg.width = this.cfg.width || this.obj.offsetWidth;
-		this.cfg.height = this.cfg.height || this.obj.offsetHeight;
+		this.config.width = this.config.width || this.element.offsetWidth;
+		this.config.height = this.config.height || this.element.offsetHeight;
 		// create a container around the element
-		this.cfg.container = document.createElement('span');
-		this.cfg.container.className = 'color';
+		this.config.container = document.createElement('span');
+		this.config.container.className = 'color';
 		// add the container into the label
-		this.obj.parentNode.insertBefore(this.cfg.container, this.obj);
+		this.element.parentNode.insertBefore(this.config.container, this.element);
 		// move the input element into the container
-		this.cfg.container.appendChild(this.obj.parentNode.removeChild(this.obj));
+		this.config.container.appendChild(this.element.parentNode.removeChild(this.element));
 		// add the pick button
-		this.cfg.button = document.createElement('span');
-		this.cfg.button.className = 'color_button color_passive';
-		this.cfg.container.appendChild(this.cfg.button);
+		this.config.button = document.createElement('span');
+		this.config.button.className = 'color_button color_passive';
+		this.config.container.appendChild(this.config.button);
 		// set the event handlers
-		this.handlePick(this.cfg.button);
+		this.handlePick(this.config.button);
 		this.handleReset(document.body);
-		this.handleChange(this.obj);
+		this.handleChange(this.element);
 	};
 	this.update = function () {
 		// update the color indicator
-		this.cfg.button.innerHTML = this.cfg.color;
-		this.cfg.button.title = this.cfg.color;
-		this.cfg.button.style.backgroundColor = this.cfg.color;
-		this.obj.value = this.cfg.color;
+		this.config.button.innerHTML = this.config.color;
+		this.config.button.title = this.config.color;
+		this.config.button.style.backgroundColor = this.config.color;
+		this.element.value = this.config.color;
 		// update the sub-components
 		this.popup.update();
 		// trigger the change event
-		this.cfg.onchange();
+		this.config.onchange();
 	};
 	this.handleChange = function (element) {
 		var _this = this;
@@ -697,7 +706,7 @@ useful.Color.prototype.Main = function (cfg, parent) {
 			color = parseInt(element.value.replace('#', ''), 16);
 			if (!isNaN(color) && element.value.match(/#/) && (element.value.length === 4 || element.value.length === 7)) {
 				// try to change it into a color
-				_this.cfg.color = element.value;
+				_this.config.color = element.value;
 				// update the interface
 				_this.update();
 			}
@@ -721,10 +730,7 @@ useful.Color.prototype.Main = function (cfg, parent) {
 		}, false);
 	};
 	// components
-	this.popup = new this.parent.Popup(this);
-	// go
-	this.start();
-	return this;
+	this.popup = new this.context.Popup(this);
 };
 
 // return as a require.js module
@@ -749,22 +755,22 @@ useful.Color.prototype.Popup = function (parent) {
 	// properties
 	"use strict";
 	this.parent = parent;
-	this.cfg = parent.cfg;
-	this.obj = parent.element;
+	this.config = parent.config;
+	this.element = parent.element;
 	// methods
 	this.setup = function () {
 		var color, colors, labelName, inputName, sliderName;
 		// remove any existing popup
-		if (this.cfg.modal) {
-			this.cfg.modal.parentNode.removeChild(this.cfg.modal);
+		if (this.config.modal) {
+			this.config.modal.parentNode.removeChild(this.config.modal);
 		}
 		// reset its hover state
-		this.cfg.hover = false;
+		this.config.hover = false;
 		// build the popup container
-		this.cfg.modal = document.createElement('div');
-		this.cfg.modal.className = 'color_popup color_hidden';
+		this.config.modal = document.createElement('div');
+		this.config.modal.className = 'color_popup color_hidden';
 		// build the colors UI
-		this.cfg.colorInput = document.createElement('fieldset');
+		this.config.colorInput = document.createElement('fieldset');
 		// write the color controls
 		colors = {'red' : 'Red: ', 'green' : 'Green: ', 'blue' : 'Blue: '};
 		for (color in colors) {
@@ -772,56 +778,56 @@ useful.Color.prototype.Popup = function (parent) {
 				labelName = color + 'Label';
 				inputName = color + 'Input';
 				sliderName = color + 'Slider';
-				this.cfg[labelName] = document.createElement('label');
-				this.cfg[labelName].innerHTML = colors[color];
-				this.cfg[inputName] = document.createElement('input');
-				this.cfg[inputName].setAttribute('type', 'number');
-				this.cfg[inputName].setAttribute('name', inputName);
-				this.cfg[inputName].setAttribute('min', '0');
-				this.cfg[inputName].setAttribute('max', '255');
-				this.cfg[inputName].setAttribute('step', '1');
-				this.cfg[inputName].setAttribute('value', '127');
-				this.cfg[sliderName] = document.createElement('input');
-				this.cfg[sliderName].setAttribute('type', 'range');
-				this.cfg[sliderName].setAttribute('class', 'range');
-				this.cfg[sliderName].setAttribute('name', sliderName);
-				this.cfg[sliderName].setAttribute('min', '0');
-				this.cfg[sliderName].setAttribute('max', '255');
-				this.cfg[sliderName].setAttribute('step', '1');
-				this.cfg[sliderName].setAttribute('value', '127');
-				this.cfg[labelName].appendChild(this.cfg[inputName]);
-				this.cfg.colorInput.appendChild(this.cfg[labelName]);
-				this.cfg.colorInput.appendChild(this.cfg[sliderName]);
+				this.config[labelName] = document.createElement('label');
+				this.config[labelName].innerHTML = colors[color];
+				this.config[inputName] = document.createElement('input');
+				this.config[inputName].setAttribute('type', 'number');
+				this.config[inputName].setAttribute('name', inputName);
+				this.config[inputName].setAttribute('min', '0');
+				this.config[inputName].setAttribute('max', '255');
+				this.config[inputName].setAttribute('step', '1');
+				this.config[inputName].setAttribute('value', '127');
+				this.config[sliderName] = document.createElement('input');
+				this.config[sliderName].setAttribute('type', 'range');
+				this.config[sliderName].setAttribute('class', 'range');
+				this.config[sliderName].setAttribute('name', sliderName);
+				this.config[sliderName].setAttribute('min', '0');
+				this.config[sliderName].setAttribute('max', '255');
+				this.config[sliderName].setAttribute('step', '1');
+				this.config[sliderName].setAttribute('value', '127');
+				this.config[labelName].appendChild(this.config[inputName]);
+				this.config.colorInput.appendChild(this.config[labelName]);
+				this.config.colorInput.appendChild(this.config[sliderName]);
 			}
 		}
 		// add the color input to the popup
-		this.cfg.modal.appendChild(this.cfg.colorInput);
+		this.config.modal.appendChild(this.config.colorInput);
 		// insert the popup into the document
-		document.body.appendChild(this.cfg.modal);
+		document.body.appendChild(this.config.modal);
 		// position the popup
-		this.cfg.position = useful.positions.object(this.cfg.button);
-		this.cfg.limits = useful.positions.window();
-		this.cfg.position.x -= (this.cfg.position.x + this.cfg.modal.offsetWidth > this.cfg.limits.x) ? this.cfg.modal.offsetWidth : 0;
-		this.cfg.position.y -= (this.cfg.position.y + this.cfg.modal.offsetHeight > this.cfg.limits.y) ? this.cfg.modal.offsetHeight : 0;
-		this.cfg.modal.style.left = (this.cfg.position.x + this.cfg.button.offsetWidth) + 'px';
-		this.cfg.modal.style.top = (this.cfg.position.y + this.cfg.button.offsetHeight) + 'px';
+		this.config.position = useful.positions.object(this.config.button);
+		this.config.limits = useful.positions.window();
+		this.config.position.x -= (this.config.position.x + this.config.modal.offsetWidth > this.config.limits.x) ? this.config.modal.offsetWidth : 0;
+		this.config.position.y -= (this.config.position.y + this.config.modal.offsetHeight > this.config.limits.y) ? this.config.modal.offsetHeight : 0;
+		this.config.modal.style.left = (this.config.position.x + this.config.button.offsetWidth) + 'px';
+		this.config.modal.style.top = (this.config.position.y + this.config.button.offsetHeight) + 'px';
 		// update the popup once
 		this.update();
 		// reveal the popup
 		this.reveal();
 		// set the popup event handlers
-		this.handlePopUpOver(this.cfg.modal);
-		this.handlePopUpOut(this.cfg.modal);
+		this.handlePopUpOver(this.config.modal);
+		this.handlePopUpOut(this.config.modal);
 		// invoke the event handlers and fall-back for the sliders
 		var rangeInstance, rangeInstances = [];
 		for (color in colors) {
 			if (colors.hasOwnProperty(color)) {
 				inputName = color + 'Input';
 				sliderName = color + 'Slider';
-				this.handleInputChange(this.cfg[inputName], color);
-				this.handleSliderChange(this.cfg[sliderName], color);
+				this.handleInputChange(this.config[inputName], color);
+				this.handleSliderChange(this.config[sliderName], color);
 				rangeInstance = new useful.Range().init({
-					'elements' : [this.cfg[sliderName]],
+					'elements' : [this.config[sliderName]],
 					'title' : '{value} ({min}-{max})',
 					'support' : navigator.userAgent.match(/webkit|opera|msie 10/gi)
 				});
@@ -832,65 +838,65 @@ useful.Color.prototype.Popup = function (parent) {
 	this.update = function () {
 		var red, green, blue;
 		// if there is a popup
-		if (this.cfg.modal) {
+		if (this.config.modal) {
 			// if this is a 6 digit color
-			if (this.cfg.color.length === 7) {
+			if (this.config.color.length === 7) {
 				// get the red component
-				red = parseInt(this.cfg.color.substr(1, 2), 16);
-				this.cfg.redInput.value = red;
-				this.cfg.redSlider.value = red;
+				red = parseInt(this.config.color.substr(1, 2), 16);
+				this.config.redInput.value = red;
+				this.config.redSlider.value = red;
 				// get the green component
-				green = parseInt(this.cfg.color.substr(3, 2), 16);
-				this.cfg.greenInput.value = green;
-				this.cfg.greenSlider.value = green;
+				green = parseInt(this.config.color.substr(3, 2), 16);
+				this.config.greenInput.value = green;
+				this.config.greenSlider.value = green;
 				// get the blue component
-				blue = parseInt(this.cfg.color.substr(5, 2), 16);
-				this.cfg.blueInput.value = blue;
-				this.cfg.blueSlider.value = blue;
+				blue = parseInt(this.config.color.substr(5, 2), 16);
+				this.config.blueInput.value = blue;
+				this.config.blueSlider.value = blue;
 				// else
-			} else if (this.cfg.color.length === 4) {
+			} else if (this.config.color.length === 4) {
 				// get the red component
-				red = this.cfg.color.substr(1, 1);
+				red = this.config.color.substr(1, 1);
 				red = parseInt(red + red, 16);
-				this.cfg.redInput.value = red;
-				this.cfg.redSlider.value = red;
+				this.config.redInput.value = red;
+				this.config.redSlider.value = red;
 				// get the green component
-				green = this.cfg.color.substr(2, 1);
+				green = this.config.color.substr(2, 1);
 				green = parseInt(green + green, 16);
-				this.cfg.greenInput.value = green;
-				this.cfg.greenSlider.value = green;
+				this.config.greenInput.value = green;
+				this.config.greenSlider.value = green;
 				// get the blue component
-				blue = this.cfg.color.substr(3, 1);
+				blue = this.config.color.substr(3, 1);
 				blue = parseInt(blue + blue, 16);
-				this.cfg.blueInput.value = blue;
-				this.cfg.blueSlider.value = blue;
+				this.config.blueInput.value = blue;
+				this.config.blueSlider.value = blue;
 			}
 		}
 	};
 	this.convert = function () {
 		var red, green, blue;
 		// update the color picker
-		red = parseInt(this.cfg.redInput.value, 10).toString(16);
+		red = parseInt(this.config.redInput.value, 10).toString(16);
 		red = (red.length === 1) ? '0' + red : red;
-		green = parseInt(this.cfg.greenInput.value, 10).toString(16);
+		green = parseInt(this.config.greenInput.value, 10).toString(16);
 		green = (green.length === 1) ? '0' + green : green;
-		blue = parseInt(this.cfg.blueInput.value, 10).toString(16);
+		blue = parseInt(this.config.blueInput.value, 10).toString(16);
 		blue = (blue.length === 1) ? '0' + blue : blue;
-		this.cfg.color = '#' + red + green + blue;
+		this.config.color = '#' + red + green + blue;
 	};
 	this.reveal = function () {
 		var _this = this;
 		// reveal the popup
 		setTimeout(function () {
-			_this.cfg.modal.className = _this.cfg.modal.className.replace('color_hidden', 'color_visible');
+			_this.config.modal.className = _this.config.modal.className.replace('color_hidden', 'color_visible');
 		}, 100);
 	};
 	this.remove = function () {
 		var _this = this;
 		// if the popup exists
-		if (this.cfg.modal && !this.cfg.hover) {
+		if (this.config.modal && !this.config.hover) {
 			// hide the popup
-			this.cfg.modal.className = this.cfg.modal.className.replace('color_visible', 'color_hidden');
+			this.config.modal.className = this.config.modal.className.replace('color_visible', 'color_hidden');
 		}
 	};
 	// events
@@ -913,8 +919,8 @@ useful.Color.prototype.Popup = function (parent) {
 				value = max;
 			}
 			// apply the value
-			_this.cfg[color + 'Input'].value = value;
-			_this.cfg[color + 'Slider'].value = value;
+			_this.config[color + 'Input'].value = value;
+			_this.config[color + 'Slider'].value = value;
 			// update the stored color
 			_this.convert();
 			// update the interface
@@ -926,7 +932,7 @@ useful.Color.prototype.Popup = function (parent) {
 		// set an event handler
 		element.onchange = function () {
 			// process the value
-			_this.cfg[color + 'Input'].value = parseInt(element.value, 10);
+			_this.config[color + 'Input'].value = parseInt(element.value, 10);
 			// update the stored color
 			_this.convert();
 			// update the interface
@@ -938,7 +944,7 @@ useful.Color.prototype.Popup = function (parent) {
 		// set an event handler
 		element.onmouseover = function () {
 			// set the hover state
-			_this.cfg.hover = true;
+			_this.config.hover = true;
 		};
 	};
 	this.handlePopUpOut = function (element) {
@@ -946,7 +952,7 @@ useful.Color.prototype.Popup = function (parent) {
 		// set an event handler
 		element.onmouseout = function () {
 			// reset the hover state
-			_this.cfg.hover = false;
+			_this.config.hover = false;
 		};
 	};
 };
@@ -969,32 +975,32 @@ var useful = useful || {};
 useful.Color = useful.Color || function () {};
 
 // extend the constructor
-useful.Color.prototype.init = function (cfg) {
+useful.Color.prototype.init = function (config) {
 	// properties
 	"use strict";
 	// methods
-	this.only = function (cfg) {
+	this.only = function (config) {
 		// start an instance of the script
-		return new this.Main(cfg, this);
+		return new this.Main(config, this).init();
 	};
-	this.each = function (cfg) {
-		var _cfg, instances = [];
+	this.each = function (config) {
+		var _config, _context = this, instances = [];
 		// for all element
-		for (var a = 0, b = cfg.elements.length; a < b; a += 1) {
-			// clone the cfguration
-			_cfg = Object.create(cfg);
+		for (var a = 0, b = config.elements.length; a < b; a += 1) {
+			// clone the configuration
+			_config = Object.create(config);
 			// insert the current element
-			_cfg.element = cfg.elements[a];
+			_config.element = config.elements[a];
 			// delete the list of elements from the clone
-			delete _cfg.elements;
+			delete _config.elements;
 			// start a new instance of the object
-			instances[a] = new this.Main(_cfg, this);
+			instances[a] = new this.Main(_config, _context).init();
 		}
 		// return the instances
 		return instances;
 	};
 	// return a single or multiple instances of the script
-	return (cfg.elements) ? this.each(cfg) : this.only(cfg);
+	return (config.elements) ? this.each(config) : this.only(config);
 };
 
 // return as a require.js module

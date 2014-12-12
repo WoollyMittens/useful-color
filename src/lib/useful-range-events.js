@@ -15,38 +15,38 @@ useful.Range.prototype.Events = function (parent) {
 	// properties
 	"use strict";
 	this.parent = parent;
-	this.cfg = parent.cfg;
+	this.config = parent.config;
 	// methods
 	this.mouse = function () {
-		var _this = this, element = this.cfg.container;
+		var _this = this, element = this.config.container;
 		// initialise coordinates
-		this.cfg.x = null;
-		this.cfg.reset = null;
+		this.config.x = null;
+		this.config.reset = null;
 		// mouse escapes the element
 		element.onmouseout = function () {
 			// cancel the previous reset timeout
-			clearTimeout(_this.cfg.reset);
+			clearTimeout(_this.config.reset);
 			// set the reset timeout
-			_this.cfg.reset = setTimeout(function () {
+			_this.config.reset = setTimeout(function () {
 				// cancel the interaction
-				_this.cfg.x = null;
-				_this.cfg.motion = false;
+				_this.config.x = null;
+				_this.config.motion = false;
 				// deactivate the button
-				_this.cfg.button.className = _this.cfg.button.className.replace('_active', '_passive');
+				_this.config.button.className = _this.config.button.className.replace('_active', '_passive');
 			}, 100);
 		};
 		element.onmouseover = function () {
 			// cancel the previous reset timeout
-			clearTimeout(_this.cfg.reset);
+			clearTimeout(_this.config.reset);
 		};
 		// mouse gesture controls
 		element.onmousedown = function (event) {
 			// get the event properties
 			event = event || window.event;
 			// store the touch positions
-			_this.cfg.x = event.pageX || (event.x + _this.cfg.offset.x);
+			_this.config.x = event.pageX || (event.x + _this.config.offset.x);
 			// activate the button
-			_this.cfg.button.className = _this.cfg.button.className.replace('_passive', '_active');
+			_this.config.button.className = _this.config.button.className.replace('_passive', '_active');
 			// update the value
 			_this.parent.update();
 			// cancel the click
@@ -56,9 +56,9 @@ useful.Range.prototype.Events = function (parent) {
 			// get the event properties
 			event = event || window.event;
 			// if the gesture is active
-			if (_this.cfg.x !== null) {
+			if (_this.config.x !== null) {
 				// store the touch positions
-				_this.cfg.x = event.pageX || (event.x + _this.cfg.offset.x);
+				_this.config.x = event.pageX || (event.x + _this.config.offset.x);
 				// update the value
 				_this.parent.update();
 			}
@@ -69,9 +69,9 @@ useful.Range.prototype.Events = function (parent) {
 			// get the event properties
 			event = event || window.event;
 			// reset the interaction
-			_this.cfg.x = null;
+			_this.config.x = null;
 			// deactivate the button
-			_this.cfg.button.className = _this.cfg.button.className.replace('_active', '_passive');
+			_this.config.button.className = _this.config.button.className.replace('_active', '_passive');
 			// cancel the click
 			return false;
 		};
@@ -82,5 +82,5 @@ useful.Range.prototype.Events = function (parent) {
 
 // return as a require.js module
 if (typeof module !== 'undefined') {
-	exports = module.exports = useful.Range;
+	exports = module.exports = useful.Range.Events;
 }

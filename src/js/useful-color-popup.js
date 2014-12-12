@@ -15,22 +15,22 @@ useful.Color.prototype.Popup = function (parent) {
 	// properties
 	"use strict";
 	this.parent = parent;
-	this.cfg = parent.cfg;
-	this.obj = parent.element;
+	this.config = parent.config;
+	this.element = parent.element;
 	// methods
 	this.setup = function () {
 		var color, colors, labelName, inputName, sliderName;
 		// remove any existing popup
-		if (this.cfg.modal) {
-			this.cfg.modal.parentNode.removeChild(this.cfg.modal);
+		if (this.config.modal) {
+			this.config.modal.parentNode.removeChild(this.config.modal);
 		}
 		// reset its hover state
-		this.cfg.hover = false;
+		this.config.hover = false;
 		// build the popup container
-		this.cfg.modal = document.createElement('div');
-		this.cfg.modal.className = 'color_popup color_hidden';
+		this.config.modal = document.createElement('div');
+		this.config.modal.className = 'color_popup color_hidden';
 		// build the colors UI
-		this.cfg.colorInput = document.createElement('fieldset');
+		this.config.colorInput = document.createElement('fieldset');
 		// write the color controls
 		colors = {'red' : 'Red: ', 'green' : 'Green: ', 'blue' : 'Blue: '};
 		for (color in colors) {
@@ -38,56 +38,56 @@ useful.Color.prototype.Popup = function (parent) {
 				labelName = color + 'Label';
 				inputName = color + 'Input';
 				sliderName = color + 'Slider';
-				this.cfg[labelName] = document.createElement('label');
-				this.cfg[labelName].innerHTML = colors[color];
-				this.cfg[inputName] = document.createElement('input');
-				this.cfg[inputName].setAttribute('type', 'number');
-				this.cfg[inputName].setAttribute('name', inputName);
-				this.cfg[inputName].setAttribute('min', '0');
-				this.cfg[inputName].setAttribute('max', '255');
-				this.cfg[inputName].setAttribute('step', '1');
-				this.cfg[inputName].setAttribute('value', '127');
-				this.cfg[sliderName] = document.createElement('input');
-				this.cfg[sliderName].setAttribute('type', 'range');
-				this.cfg[sliderName].setAttribute('class', 'range');
-				this.cfg[sliderName].setAttribute('name', sliderName);
-				this.cfg[sliderName].setAttribute('min', '0');
-				this.cfg[sliderName].setAttribute('max', '255');
-				this.cfg[sliderName].setAttribute('step', '1');
-				this.cfg[sliderName].setAttribute('value', '127');
-				this.cfg[labelName].appendChild(this.cfg[inputName]);
-				this.cfg.colorInput.appendChild(this.cfg[labelName]);
-				this.cfg.colorInput.appendChild(this.cfg[sliderName]);
+				this.config[labelName] = document.createElement('label');
+				this.config[labelName].innerHTML = colors[color];
+				this.config[inputName] = document.createElement('input');
+				this.config[inputName].setAttribute('type', 'number');
+				this.config[inputName].setAttribute('name', inputName);
+				this.config[inputName].setAttribute('min', '0');
+				this.config[inputName].setAttribute('max', '255');
+				this.config[inputName].setAttribute('step', '1');
+				this.config[inputName].setAttribute('value', '127');
+				this.config[sliderName] = document.createElement('input');
+				this.config[sliderName].setAttribute('type', 'range');
+				this.config[sliderName].setAttribute('class', 'range');
+				this.config[sliderName].setAttribute('name', sliderName);
+				this.config[sliderName].setAttribute('min', '0');
+				this.config[sliderName].setAttribute('max', '255');
+				this.config[sliderName].setAttribute('step', '1');
+				this.config[sliderName].setAttribute('value', '127');
+				this.config[labelName].appendChild(this.config[inputName]);
+				this.config.colorInput.appendChild(this.config[labelName]);
+				this.config.colorInput.appendChild(this.config[sliderName]);
 			}
 		}
 		// add the color input to the popup
-		this.cfg.modal.appendChild(this.cfg.colorInput);
+		this.config.modal.appendChild(this.config.colorInput);
 		// insert the popup into the document
-		document.body.appendChild(this.cfg.modal);
+		document.body.appendChild(this.config.modal);
 		// position the popup
-		this.cfg.position = useful.positions.object(this.cfg.button);
-		this.cfg.limits = useful.positions.window();
-		this.cfg.position.x -= (this.cfg.position.x + this.cfg.modal.offsetWidth > this.cfg.limits.x) ? this.cfg.modal.offsetWidth : 0;
-		this.cfg.position.y -= (this.cfg.position.y + this.cfg.modal.offsetHeight > this.cfg.limits.y) ? this.cfg.modal.offsetHeight : 0;
-		this.cfg.modal.style.left = (this.cfg.position.x + this.cfg.button.offsetWidth) + 'px';
-		this.cfg.modal.style.top = (this.cfg.position.y + this.cfg.button.offsetHeight) + 'px';
+		this.config.position = useful.positions.object(this.config.button);
+		this.config.limits = useful.positions.window();
+		this.config.position.x -= (this.config.position.x + this.config.modal.offsetWidth > this.config.limits.x) ? this.config.modal.offsetWidth : 0;
+		this.config.position.y -= (this.config.position.y + this.config.modal.offsetHeight > this.config.limits.y) ? this.config.modal.offsetHeight : 0;
+		this.config.modal.style.left = (this.config.position.x + this.config.button.offsetWidth) + 'px';
+		this.config.modal.style.top = (this.config.position.y + this.config.button.offsetHeight) + 'px';
 		// update the popup once
 		this.update();
 		// reveal the popup
 		this.reveal();
 		// set the popup event handlers
-		this.handlePopUpOver(this.cfg.modal);
-		this.handlePopUpOut(this.cfg.modal);
+		this.handlePopUpOver(this.config.modal);
+		this.handlePopUpOut(this.config.modal);
 		// invoke the event handlers and fall-back for the sliders
 		var rangeInstance, rangeInstances = [];
 		for (color in colors) {
 			if (colors.hasOwnProperty(color)) {
 				inputName = color + 'Input';
 				sliderName = color + 'Slider';
-				this.handleInputChange(this.cfg[inputName], color);
-				this.handleSliderChange(this.cfg[sliderName], color);
+				this.handleInputChange(this.config[inputName], color);
+				this.handleSliderChange(this.config[sliderName], color);
 				rangeInstance = new useful.Range().init({
-					'elements' : [this.cfg[sliderName]],
+					'elements' : [this.config[sliderName]],
 					'title' : '{value} ({min}-{max})',
 					'support' : navigator.userAgent.match(/webkit|opera|msie 10/gi)
 				});
@@ -98,65 +98,65 @@ useful.Color.prototype.Popup = function (parent) {
 	this.update = function () {
 		var red, green, blue;
 		// if there is a popup
-		if (this.cfg.modal) {
+		if (this.config.modal) {
 			// if this is a 6 digit color
-			if (this.cfg.color.length === 7) {
+			if (this.config.color.length === 7) {
 				// get the red component
-				red = parseInt(this.cfg.color.substr(1, 2), 16);
-				this.cfg.redInput.value = red;
-				this.cfg.redSlider.value = red;
+				red = parseInt(this.config.color.substr(1, 2), 16);
+				this.config.redInput.value = red;
+				this.config.redSlider.value = red;
 				// get the green component
-				green = parseInt(this.cfg.color.substr(3, 2), 16);
-				this.cfg.greenInput.value = green;
-				this.cfg.greenSlider.value = green;
+				green = parseInt(this.config.color.substr(3, 2), 16);
+				this.config.greenInput.value = green;
+				this.config.greenSlider.value = green;
 				// get the blue component
-				blue = parseInt(this.cfg.color.substr(5, 2), 16);
-				this.cfg.blueInput.value = blue;
-				this.cfg.blueSlider.value = blue;
+				blue = parseInt(this.config.color.substr(5, 2), 16);
+				this.config.blueInput.value = blue;
+				this.config.blueSlider.value = blue;
 				// else
-			} else if (this.cfg.color.length === 4) {
+			} else if (this.config.color.length === 4) {
 				// get the red component
-				red = this.cfg.color.substr(1, 1);
+				red = this.config.color.substr(1, 1);
 				red = parseInt(red + red, 16);
-				this.cfg.redInput.value = red;
-				this.cfg.redSlider.value = red;
+				this.config.redInput.value = red;
+				this.config.redSlider.value = red;
 				// get the green component
-				green = this.cfg.color.substr(2, 1);
+				green = this.config.color.substr(2, 1);
 				green = parseInt(green + green, 16);
-				this.cfg.greenInput.value = green;
-				this.cfg.greenSlider.value = green;
+				this.config.greenInput.value = green;
+				this.config.greenSlider.value = green;
 				// get the blue component
-				blue = this.cfg.color.substr(3, 1);
+				blue = this.config.color.substr(3, 1);
 				blue = parseInt(blue + blue, 16);
-				this.cfg.blueInput.value = blue;
-				this.cfg.blueSlider.value = blue;
+				this.config.blueInput.value = blue;
+				this.config.blueSlider.value = blue;
 			}
 		}
 	};
 	this.convert = function () {
 		var red, green, blue;
 		// update the color picker
-		red = parseInt(this.cfg.redInput.value, 10).toString(16);
+		red = parseInt(this.config.redInput.value, 10).toString(16);
 		red = (red.length === 1) ? '0' + red : red;
-		green = parseInt(this.cfg.greenInput.value, 10).toString(16);
+		green = parseInt(this.config.greenInput.value, 10).toString(16);
 		green = (green.length === 1) ? '0' + green : green;
-		blue = parseInt(this.cfg.blueInput.value, 10).toString(16);
+		blue = parseInt(this.config.blueInput.value, 10).toString(16);
 		blue = (blue.length === 1) ? '0' + blue : blue;
-		this.cfg.color = '#' + red + green + blue;
+		this.config.color = '#' + red + green + blue;
 	};
 	this.reveal = function () {
 		var _this = this;
 		// reveal the popup
 		setTimeout(function () {
-			_this.cfg.modal.className = _this.cfg.modal.className.replace('color_hidden', 'color_visible');
+			_this.config.modal.className = _this.config.modal.className.replace('color_hidden', 'color_visible');
 		}, 100);
 	};
 	this.remove = function () {
 		var _this = this;
 		// if the popup exists
-		if (this.cfg.modal && !this.cfg.hover) {
+		if (this.config.modal && !this.config.hover) {
 			// hide the popup
-			this.cfg.modal.className = this.cfg.modal.className.replace('color_visible', 'color_hidden');
+			this.config.modal.className = this.config.modal.className.replace('color_visible', 'color_hidden');
 		}
 	};
 	// events
@@ -179,8 +179,8 @@ useful.Color.prototype.Popup = function (parent) {
 				value = max;
 			}
 			// apply the value
-			_this.cfg[color + 'Input'].value = value;
-			_this.cfg[color + 'Slider'].value = value;
+			_this.config[color + 'Input'].value = value;
+			_this.config[color + 'Slider'].value = value;
 			// update the stored color
 			_this.convert();
 			// update the interface
@@ -192,7 +192,7 @@ useful.Color.prototype.Popup = function (parent) {
 		// set an event handler
 		element.onchange = function () {
 			// process the value
-			_this.cfg[color + 'Input'].value = parseInt(element.value, 10);
+			_this.config[color + 'Input'].value = parseInt(element.value, 10);
 			// update the stored color
 			_this.convert();
 			// update the interface
@@ -204,7 +204,7 @@ useful.Color.prototype.Popup = function (parent) {
 		// set an event handler
 		element.onmouseover = function () {
 			// set the hover state
-			_this.cfg.hover = true;
+			_this.config.hover = true;
 		};
 	};
 	this.handlePopUpOut = function (element) {
@@ -212,7 +212,7 @@ useful.Color.prototype.Popup = function (parent) {
 		// set an event handler
 		element.onmouseout = function () {
 			// reset the hover state
-			_this.cfg.hover = false;
+			_this.config.hover = false;
 		};
 	};
 };

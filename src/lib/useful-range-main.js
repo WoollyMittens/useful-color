@@ -11,62 +11,65 @@ var useful = useful || {};
 useful.Range = useful.Range || function () {};
 
 // extend the constructor
-useful.Range.prototype.Main = function (cfg, parent) {
+useful.Range.prototype.Main = function (config, context) {
 	// properties
 	"use strict";
 	this.parent = parent;
-	this.cfg = cfg;
-	this.obj = cfg.element;
+	this.config = config;
+	this.context = context;
+	this.element = config.element;
 	// methods
-	this.start = function () {
+	this.init = function () {
 		// build the interface
 		this.setup();
 		// start the updates
 		this.update();
+		// return the object
+		return this;
 	};
 	this.setup = function () {
 		// set the initial value, if there isn't one
-		this.obj.value = this.obj.value || 0;
+		this.element.value = this.element.value || 0;
 		// measure the dimensions of the parent element if they are not given
-		this.cfg.width = this.cfg.width || this.obj.offsetWidth;
-		this.cfg.height = this.cfg.height || this.obj.offsetHeight;
+		this.config.width = this.config.width || this.element.offsetWidth;
+		this.config.height = this.config.height || this.element.offsetHeight;
 		// create a container around the element
-		this.cfg.container = document.createElement('span');
-		this.cfg.container.className = 'range';
+		this.config.container = document.createElement('span');
+		this.config.container.className = 'range';
 		// add the container into the label
-		this.obj.parentNode.insertBefore(this.cfg.container, this.obj);
+		this.element.parentNode.insertBefore(this.config.container, this.element);
 		// move the input element into the container
-		this.cfg.container.appendChild(this.obj.parentNode.removeChild(this.obj));
+		this.config.container.appendChild(this.element.parentNode.removeChild(this.element));
 		// add the range rails
-		this.cfg.rails = document.createElement('span');
-		this.cfg.rails.className = 'range_rails';
-		this.cfg.container.appendChild(this.cfg.rails);
+		this.config.rails = document.createElement('span');
+		this.config.rails.className = 'range_rails';
+		this.config.container.appendChild(this.config.rails);
 		// add the range button
-		this.cfg.button = document.createElement('span');
-		this.cfg.button.className = 'range_button range_passive';
-		this.cfg.container.appendChild(this.cfg.button);
+		this.config.button = document.createElement('span');
+		this.config.button.className = 'range_button range_passive';
+		this.config.container.appendChild(this.config.button);
 		// set the event handler
-		this.events = new this.parent.Events(this);
+		this.events = new this.context.Events(this);
 		// check of changes
-		clearInterval(this.cfg.interval);
+		clearInterval(this.config.interval);
 		var _this = this;
-		this.cfg.interval = setInterval(function () {
+		this.config.interval = setInterval(function () {
 			_this.update();
 		}, 500);
 	};
 	this.update = function () {
 		var min, max, value, steps, range;
 		// get the attributes from the input element
-		min = parseFloat(this.obj.getAttribute('min')) || 0;
-		max = parseFloat(this.obj.getAttribute('max')) || 1;
-		steps = parseFloat(this.obj.getAttribute('steps')) || 0;
+		min = parseFloat(this.element.getAttribute('min')) || 0;
+		max = parseFloat(this.element.getAttribute('max')) || 1;
+		steps = parseFloat(this.element.getAttribute('steps')) || 0;
 		range = max - min;
 		// get the offset of the element
-		this.cfg.offset = useful.positions.object(this.cfg.container);
+		this.config.offset = useful.positions.object(this.config.container);
 		// get the existing value or the fresh input
-		value = (this.cfg.x === null) ?
-			parseFloat(this.obj.value) :
-			(this.cfg.x - this.cfg.offset.x) / this.cfg.container.offsetWidth * range + min;
+		value = (this.config.x === null) ?
+			parseFloat(this.element.value) :
+			(this.config.x - this.config.offset.x) / this.config.container.offsetWidth * range + min;
 		// apply any steps to the value
 		if (steps) {
 			var rounding;
@@ -83,26 +86,23 @@ useful.Range.prototype.Main = function (cfg, parent) {
 			value = max;
 		}
 		// set the button position
-		this.cfg.button.style.left = Math.round((value - min) / range * 100) + '%';
+		this.config.button.style.left = Math.round((value - min) / range * 100) + '%';
 		// update the title
-		if (this.cfg.title) {
-			this.cfg.container.setAttribute('title', this.cfg.title.replace('{value}', Math.round(value)).replace('{min}', min).replace('{max}', max));
+		if (this.config.title) {
+			this.config.container.setAttribute('title', this.config.title.replace('{value}', Math.round(value)).replace('{min}', min).replace('{max}', max));
 		}
 		// update the value
-		this.obj.value = value;
+		this.element.value = value;
 		// trigger any onchange event
-		if (this.cfg.x !== null) {
+		if (this.config.x !== null) {
 			var evt = document.createEvent('HTMLEvents');
 			evt.initEvent('change', false, true);
-			this.obj.dispatchEvent(evt);
+			this.element.dispatchEvent(evt);
 		}
 	};
-	// go
-	this.start();
-	return this;
 };
 
 // return as a require.js module
 if (typeof module !== 'undefined') {
-	exports = module.exports = useful.Range;
+	exports = module.exports = useful.Range.Main;
 }
