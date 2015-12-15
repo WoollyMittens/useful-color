@@ -12,11 +12,15 @@ useful.Range = useful.Range || function () {};
 
 // extend the constructor
 useful.Range.prototype.Events = function (parent) {
-	// properties
+
+	// PROPERTIES
+	
 	"use strict";
 	this.parent = parent;
 	this.config = parent.config;
-	// methods
+
+	// METHODS
+	
 	this.mouse = function () {
 		var _this = this, element = this.config.container;
 		// initialise coordinates

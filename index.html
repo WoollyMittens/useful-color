@@ -1,61 +1,10 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta charset="UTF-8" />
-		<title>useful-color.js: Colour Picker</title>
-		<style>
-			html { font-family:Sans-Serif; font-size:75%; height:100%; }
-			body { _height:100%; line-height:180%; margin:0; min-height:100%; padding:1%; }
-			.example { max-width:960px; margin:0 auto; padding:0; clear:both; }
-			.example > article, .example > aside { width:98%; padding:2%; }
-			.example-left > article, .example-left > aside { width:48%; padding:1%; float:left; }
-			.example-right > article, .example-right > aside { width:48%; padding:1%; float:right; }
-		</style>
-		<!--[if lte IE 9]>
-			<meta http-equiv="imagetoolbar" content="no"/>
-			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-            <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-			<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
-		<![endif]-->
+    <title>Redirect to demo</title>
+		<script>document.location.replace('./dist');</script>
 	</head>
 	<body>
-		<section class="example example-right">
-			<article>
-				<h2>Colour Picker</h2>
-				<p>An alternative for the HTML5 color input element.</p>
-				<p><a class="button downloadButton" href="http://github.com/WoollyMittens/useful-color" target="_blank">Download (GitHub)</a></p>
-			</article>
-			<aside>
-
-				<!-- Cut below this -->
-				<style>@import url("./inc/css/useful-color.css");</style>
-				<form>
-					<label>
-						Native:
-						<input name="html5colour" pattern="^.+$" type="color" title="Pick a color" value="#FF0000"  placeholder="#FF0000"/>
-					</label>
-					<label>
-						Fallback:
-						<input name="fallbackcolour" pattern="^.+$" class="color" type="text" title="Pick a color" value=""  placeholder="#FF0000"/>
-					</label>
-				</form>
-				<script src="./inc/js/useful-color.js"></script>
-				<script>
-				//<!--
-					// create new instances of the script
-					var colors = new useful.Color().init({
-						// elements
-						'elements' : document.querySelectorAll('input.color'),
-						// initial color
-						'color' : '#FF0000',
-						// on change event
-						'onchange' : function () {}
-					});
-				//-->
-				</script>
-				<!-- Cut above this -->
-
-			</aside>
-		</section>
+		<a href="./dist">Start</a>
 	</body>
 </html>

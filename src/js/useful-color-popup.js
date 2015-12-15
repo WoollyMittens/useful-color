@@ -12,12 +12,16 @@ useful.Color = useful.Color || function () {};
 
 // extend the constructor
 useful.Color.prototype.Popup = function (parent) {
-	// properties
+
+	// PROPERTIES
+	
 	"use strict";
 	this.parent = parent;
 	this.config = parent.config;
 	this.element = parent.element;
-	// methods
+
+	// METHODS
+	
 	this.setup = function () {
 		var color, colors, labelName, inputName, sliderName;
 		// remove any existing popup
@@ -95,6 +99,7 @@ useful.Color.prototype.Popup = function (parent) {
 			}
 		}
 	};
+	
 	this.update = function () {
 		var red, green, blue;
 		// if there is a popup
@@ -133,6 +138,7 @@ useful.Color.prototype.Popup = function (parent) {
 			}
 		}
 	};
+	
 	this.convert = function () {
 		var red, green, blue;
 		// update the color picker
@@ -144,6 +150,7 @@ useful.Color.prototype.Popup = function (parent) {
 		blue = (blue.length === 1) ? '0' + blue : blue;
 		this.config.color = '#' + red + green + blue;
 	};
+	
 	this.reveal = function () {
 		var _this = this;
 		// reveal the popup
@@ -151,6 +158,7 @@ useful.Color.prototype.Popup = function (parent) {
 			_this.config.modal.className = _this.config.modal.className.replace('color_hidden', 'color_visible');
 		}, 100);
 	};
+	
 	this.remove = function () {
 		var _this = this;
 		// if the popup exists
@@ -159,7 +167,9 @@ useful.Color.prototype.Popup = function (parent) {
 			this.config.modal.className = this.config.modal.className.replace('color_visible', 'color_hidden');
 		}
 	};
-	// events
+
+	// EVENTS
+	
 	this.handleInputChange = function (element, color) {
 		var _this = this;
 		// set an event handler
@@ -187,6 +197,7 @@ useful.Color.prototype.Popup = function (parent) {
 			_this.parent.update();
 		};
 	};
+	
 	this.handleSliderChange = function (element, color) {
 		var _this = this;
 		// set an event handler
@@ -199,6 +210,7 @@ useful.Color.prototype.Popup = function (parent) {
 			_this.parent.update();
 		};
 	};
+	
 	this.handlePopUpOver = function (element) {
 		var _this = this;
 		// set an event handler
@@ -207,6 +219,7 @@ useful.Color.prototype.Popup = function (parent) {
 			_this.config.hover = true;
 		};
 	};
+	
 	this.handlePopUpOut = function (element) {
 		var _this = this;
 		// set an event handler

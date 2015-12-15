@@ -1,12 +1,12 @@
-@import "compass/css3";
-@import "compass/utilities";
+
+
 @import "mixins";
 @import "../lib/useful-range.scss";
 /*
 	Reference styling for a colour picker
 */
 span.color, input.color, input[type=color] {
-	@include box-sizing(border-box);
+	box-sizing: border-box;
 	display : block;
 	width : 100%;
 	margin-bottom : 1em;
@@ -14,8 +14,8 @@ span.color, input.color, input[type=color] {
 span.color {
 	position : relative;
 	span.color_button {
-		@include border-radius(2px);
-		background: #ff000;
+		border-radius: 2px;
+		background: #ff0000;
 		border : solid 1px #000;
 		cursor : pointer;
 		display : block;
@@ -35,16 +35,16 @@ span.color {
 	color popup
 */
 div.color_popup {
-	@include box-sizing(border-box);
-	@include background(linear-gradient(top, #ffffff 0%,#ffffff 80%,#ffffff 80%,#cccccc 100%));
-	@include box-shadow(0 1px 3px #999);
-	@include border-radius(3px);
+	box-sizing: border-box;
+	background: linear-gradient(top, #ffffff 0%,#ffffff 80%,#ffffff 80%,#cccccc 100%);
+	box-shadow: 0 1px 3px #999;
+	border-radius: 3px;
 	background-color : #ffffff;
 	border : solid 1px #333;
 	position : absolute;
 	width : 16em;
 	* {
-		@include box-sizing(border-box);
+		box-sizing: border-box;
 	}
 	fieldset {
 		border : none;
@@ -79,4 +79,3 @@ div.color_popup.color_hidden {
 div.color_popup.color_visible {
 	visibility : visible;
 }
-

@@ -12,13 +12,17 @@ useful.Range = useful.Range || function () {};
 
 // extend the constructor
 useful.Range.prototype.Main = function (config, context) {
-	// properties
+
+	// PROPERTIES
+	
 	"use strict";
 	this.parent = parent;
 	this.config = config;
 	this.context = context;
 	this.element = config.element;
-	// methods
+
+	// METHODS
+	
 	this.init = function () {
 		// build the interface
 		this.setup();
@@ -27,6 +31,7 @@ useful.Range.prototype.Main = function (config, context) {
 		// return the object
 		return this;
 	};
+	
 	this.setup = function () {
 		// set the initial value, if there isn't one
 		this.element.value = this.element.value || 0;
@@ -57,6 +62,7 @@ useful.Range.prototype.Main = function (config, context) {
 			_this.update();
 		}, 500);
 	};
+	
 	this.update = function () {
 		var min, max, value, steps, range;
 		// get the attributes from the input element

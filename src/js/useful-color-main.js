@@ -12,12 +12,16 @@ useful.Color = useful.Color || function () {};
 
 // extend the constructor
 useful.Color.prototype.Main = function (config, context) {
-	// properties
+
+	// PROPERTIES
+	
 	"use strict";
 	this.config = config;
 	this.context = context;
 	this.element = config.element;
-	// methods
+
+	// METHODS
+	
 	this.init = function () {
 		// retrieve starting colour
 		this.config.color = this.element.value || this.config.color;
@@ -28,6 +32,7 @@ useful.Color.prototype.Main = function (config, context) {
 		// return the object
 		return this;
 	};
+	
 	this.setup = function () {
 		// measure the dimensions of the parent element if they are not given
 		this.config.width = this.config.width || this.element.offsetWidth;
@@ -48,6 +53,7 @@ useful.Color.prototype.Main = function (config, context) {
 		this.handleReset(document.body);
 		this.handleChange(this.element);
 	};
+	
 	this.update = function () {
 		// update the color indicator
 		this.config.button.innerHTML = this.config.color;
@@ -59,6 +65,7 @@ useful.Color.prototype.Main = function (config, context) {
 		// trigger the change event
 		this.config.onchange();
 	};
+	
 	this.handleChange = function (element) {
 		var _this = this;
 		// set an event handler
@@ -74,6 +81,7 @@ useful.Color.prototype.Main = function (config, context) {
 			}
 		}, false);
 	};
+	
 	this.handlePick = function (element) {
 		var _this = this;
 		// set an event handler
@@ -84,6 +92,7 @@ useful.Color.prototype.Main = function (config, context) {
 			event.preventDefault();
 		}, false);
 	};
+	
 	this.handleReset = function (element) {
 		var _this = this;
 		element.addEventListener('click', function () {
@@ -91,7 +100,9 @@ useful.Color.prototype.Main = function (config, context) {
 			_this.popup.remove();
 		}, false);
 	};
-	// components
+
+	// COMPONENTS
+	
 	this.popup = new this.context.Popup(this);
 };
 
