@@ -2,7 +2,7 @@
 
 An alternative for the HTML5 color input element.
 
-Try the <a href="http://www.woollymittens.nl/useful/default.php?url=useful-color">demo</a>.
+Try the <a href="http://www.woollymittens.nl/default.php?url=useful-color">demo</a>.
 
 ## How to include the script
 
