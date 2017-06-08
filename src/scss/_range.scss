@@ -24,7 +24,7 @@ span.range {
 		visibility : hidden;
 	}
 	span.range_rails {
-		background: linear-gradient(top, #666666 0%,#cccccc 100%);
+		background: linear-gradient(180deg, #666666 0%,#cccccc 100%);
 		border-radius: 3px;
 		background-color: #666666;
 		display : block;
@@ -37,7 +37,7 @@ span.range {
 		width : 100%;
 	}
 	span.range_button {
-		background: linear-gradient(top, #ececec 0%, #ececec 50%, #f4f4f4 51%, #ffffff 100%);
+		background: linear-gradient(180deg, #ececec 0%, #ececec 50%, #f4f4f4 51%, #ffffff 100%);
 		border-radius: 6px;
 		background-color : #ececec;
 		border : solid 1px #666;
@@ -52,7 +52,7 @@ span.range {
 		top : 50%;
 	}
 	span.range_button.range_active {
-		background: linear-gradient(top, #d2d2d2 0%, #cfcfcf 50%, #d6d6d6 51%, #dddddd 100%);
+		background: linear-gradient(180deg, #d2d2d2 0%, #cfcfcf 50%, #d6d6d6 51%, #dddddd 100%);
 		background-color : #d2d2d2;
 	}
 }
