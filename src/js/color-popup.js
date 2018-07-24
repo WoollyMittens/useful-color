@@ -1,27 +1,14 @@
-/*
-Source:
-van Creij, Maurice (2014). "useful.color.js: Color input element", version 20141127, http://www.woollymittens.nl/.
-
-License:
-This work is licensed under a Creative Commons Attribution 3.0 Unported License.
-*/
-
-// create the constructor if needed
-var useful = useful || {};
-useful.Color = useful.Color || function () {};
-
-// extend the constructor
-useful.Color.prototype.Popup = function (parent) {
+// extend the class
+Color.prototype.Popup = function (parent) {
 
 	// PROPERTIES
-	
-	"use strict";
+
 	this.parent = parent;
 	this.config = parent.config;
 	this.element = parent.element;
 
 	// METHODS
-	
+
 	this.setup = function () {
 		var color, colors, labelName, inputName, sliderName;
 		// remove any existing popup
@@ -69,8 +56,8 @@ useful.Color.prototype.Popup = function (parent) {
 		// insert the popup into the document
 		document.body.appendChild(this.config.modal);
 		// position the popup
-		this.config.position = useful.positions.object(this.config.button);
-		this.config.limits = useful.positions.window();
+		this.config.position = positions.object(this.config.button);
+		this.config.limits = positions.window();
 		this.config.position.x -= (this.config.position.x + this.config.modal.offsetWidth > this.config.limits.x) ? this.config.modal.offsetWidth : 0;
 		this.config.position.y -= (this.config.position.y + this.config.modal.offsetHeight > this.config.limits.y) ? this.config.modal.offsetHeight : 0;
 		this.config.modal.style.left = (this.config.position.x + this.config.button.offsetWidth) + 'px';
@@ -90,7 +77,7 @@ useful.Color.prototype.Popup = function (parent) {
 				sliderName = color + 'Slider';
 				this.handleInputChange(this.config[inputName], color);
 				this.handleSliderChange(this.config[sliderName], color);
-				rangeInstance = new useful.Range().init({
+				rangeInstance = new Range({
 					'elements' : [this.config[sliderName]],
 					'title' : '{value} ({min}-{max})',
 					'support' : navigator.userAgent.match(/webkit|opera|msie 10/gi)
@@ -99,7 +86,7 @@ useful.Color.prototype.Popup = function (parent) {
 			}
 		}
 	};
-	
+
 	this.update = function () {
 		var red, green, blue;
 		// if there is a popup
@@ -138,7 +125,7 @@ useful.Color.prototype.Popup = function (parent) {
 			}
 		}
 	};
-	
+
 	this.convert = function () {
 		var red, green, blue;
 		// update the color picker
@@ -150,7 +137,7 @@ useful.Color.prototype.Popup = function (parent) {
 		blue = (blue.length === 1) ? '0' + blue : blue;
 		this.config.color = '#' + red + green + blue;
 	};
-	
+
 	this.reveal = function () {
 		var _this = this;
 		// reveal the popup
@@ -158,7 +145,7 @@ useful.Color.prototype.Popup = function (parent) {
 			_this.config.modal.className = _this.config.modal.className.replace('color_hidden', 'color_visible');
 		}, 100);
 	};
-	
+
 	this.remove = function () {
 		var _this = this;
 		// if the popup exists
@@ -169,7 +156,7 @@ useful.Color.prototype.Popup = function (parent) {
 	};
 
 	// EVENTS
-	
+
 	this.handleInputChange = function (element, color) {
 		var _this = this;
 		// set an event handler
@@ -197,7 +184,7 @@ useful.Color.prototype.Popup = function (parent) {
 			_this.parent.update();
 		};
 	};
-	
+
 	this.handleSliderChange = function (element, color) {
 		var _this = this;
 		// set an event handler
@@ -210,7 +197,7 @@ useful.Color.prototype.Popup = function (parent) {
 			_this.parent.update();
 		};
 	};
-	
+
 	this.handlePopUpOver = function (element) {
 		var _this = this;
 		// set an event handler
@@ -219,7 +206,7 @@ useful.Color.prototype.Popup = function (parent) {
 			_this.config.hover = true;
 		};
 	};
-	
+
 	this.handlePopUpOut = function (element) {
 		var _this = this;
 		// set an event handler
@@ -229,8 +216,3 @@ useful.Color.prototype.Popup = function (parent) {
 		};
 	};
 };
-
-// return as a require.js module
-if (typeof module !== 'undefined') {
-	exports = module.exports = useful.Color.Popup;
-}

@@ -1,27 +1,14 @@
-/*
-Source:
-van Creij, Maurice (2014). "useful.color.js: Color input element", version 20141127, http://www.woollymittens.nl/.
-
-License:
-This work is licensed under a Creative Commons Attribution 3.0 Unported License.
-*/
-
-// create the constructor if needed
-var useful = useful || {};
-useful.Color = useful.Color || function () {};
-
-// extend the constructor
-useful.Color.prototype.Main = function (config, context) {
+// extend the class
+Color.prototype.Main = function (config, context) {
 
 	// PROPERTIES
-	
-	"use strict";
+
 	this.config = config;
 	this.context = context;
 	this.element = config.element;
 
 	// METHODS
-	
+
 	this.init = function () {
 		// retrieve starting colour
 		this.config.color = this.element.value || this.config.color;
@@ -32,7 +19,7 @@ useful.Color.prototype.Main = function (config, context) {
 		// return the object
 		return this;
 	};
-	
+
 	this.setup = function () {
 		// measure the dimensions of the parent element if they are not given
 		this.config.width = this.config.width || this.element.offsetWidth;
@@ -53,7 +40,7 @@ useful.Color.prototype.Main = function (config, context) {
 		this.handleReset(document.body);
 		this.handleChange(this.element);
 	};
-	
+
 	this.update = function () {
 		// update the color indicator
 		this.config.button.innerHTML = this.config.color;
@@ -65,7 +52,7 @@ useful.Color.prototype.Main = function (config, context) {
 		// trigger the change event
 		this.config.onchange();
 	};
-	
+
 	this.handleChange = function (element) {
 		var _this = this;
 		// set an event handler
@@ -81,7 +68,7 @@ useful.Color.prototype.Main = function (config, context) {
 			}
 		}, false);
 	};
-	
+
 	this.handlePick = function (element) {
 		var _this = this;
 		// set an event handler
@@ -92,7 +79,7 @@ useful.Color.prototype.Main = function (config, context) {
 			event.preventDefault();
 		}, false);
 	};
-	
+
 	this.handleReset = function (element) {
 		var _this = this;
 		element.addEventListener('click', function () {
@@ -102,11 +89,11 @@ useful.Color.prototype.Main = function (config, context) {
 	};
 
 	// COMPONENTS
-	
-	this.popup = new this.context.Popup(this);
-};
 
-// return as a require.js module
-if (typeof module !== 'undefined') {
-	exports = module.exports = useful.Color.Main;
-}
+	this.popup = new this.context.Popup(this);
+
+	// EVENTS
+
+	this.init();
+
+};
