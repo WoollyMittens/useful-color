@@ -34,5 +34,5 @@ var Color = function (config) {
 };
 
 // return as a require.js module
-if (typeof define != 'undefined') define(['color'], function () { return Color });
+if (typeof define != 'undefined') define([], function () { return Color });
 if (typeof module != 'undefined') module.exports = Color;

@@ -9,13 +9,33 @@ Try the <a href="http://www.woollymittens.nl/default.php?url=useful-color">demo<
 The stylesheet is best included in the header of the document.
 
 ```html
-<link rel="stylesheet" href="./css/color.css"/>
+<link rel="stylesheet" href="css/color.css"/>
 ```
 
 This include can be added to the header or placed inline before the script is invoked.
 
 ```html
-<script src="./js/color.js"></script>
+<script src="lib/positions.js"></script>
+<script src="lib/range.js"></script>
+<script src="js/color.js"></script>
+```
+
+```js
+requirejs([
+	'lib/positions.js',
+	'lib/range.js',
+	'js/colors.js'
+], function(Color) {
+	...
+});
+```
+
+Or import into an MVC framework.
+
+```js
+var positions = require('js/positions.js');
+var Range = require('js/range.js');
+var Color = require('js/colors.js');
 ```
 
 ## How to start the script
